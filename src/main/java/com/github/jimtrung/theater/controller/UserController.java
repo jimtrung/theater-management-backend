@@ -93,31 +93,22 @@ public class UserController {
     // Gửi email, OTP
 
     // Tạo thread để xóa token và otp sau 5 mins
+    // Create a single-thread executor
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    Future<Integer> future = executorService.submit(() -> {
-      Thread.sleep(300_000);
-      userDAO.updateByField(userData.getId(), "token", "");
-      userDAO.updateByField(userData.getId(), "otp", null);
-
-      return 69420;
+    executorService.submit(() -> {
+      try {
+        Thread.sleep(300_000); // 5 minutes
+        userDAO.updateByField(userData.getId(), "token", "");
+        userDAO.updateByField(userData.getId(), "otp", null);
+        System.out.println("Email verification token and OTP has been removed successfully");
+      } catch (Exception e) {
+        System.out.println("Task threw exception: " + e.getMessage());
+        e.printStackTrace();
+      }
     });
 
-    // NOTE: Need a better way to handle errors
-    try {
-      Integer result = future.get();
-      if (result == 69420) {
-        System.out.println("Email verification token and OTP has been removed successfully");
-      }
-    } catch (ExecutionException e) {
-      // Exception from inside the task
-      System.out.println("Task threw exception: " + e.getCause());
-    } catch (InterruptedException e) {
-      // Thread was interrupted
-      e.printStackTrace();
-    } finally {
-      executorService.shutdown();
-    }
+    executorService.shutdown();
   }
 
   public void signIn(User user) throws Exception {
@@ -134,7 +125,7 @@ public class UserController {
     User existingUser = userDAO.getByField("username", user.getUsername());
 
     // Compare password
-    if (BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
+    if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
       throw new Exception("Wrong password");
     }
 

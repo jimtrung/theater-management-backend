@@ -21,7 +21,9 @@ public class SessionTokenUtil {
 
     String encoded =  Base64.getEncoder().encodeToString(encrypted);
 
-    FileWriter fw = new FileWriter("session.enc");
+    try (FileWriter fw = new FileWriter("session.enc")) {
+      fw.write(encoded);
+    }
   }
 
   public static String getKey() throws Exception {

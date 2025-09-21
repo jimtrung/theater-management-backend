@@ -29,6 +29,8 @@ public class SignUpUI {
   public SignUpUI(JPanel container) {
     this.container = container;
 
+    panel1.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
+
     Database dtb = null;
     try {
       dtb = new Database();

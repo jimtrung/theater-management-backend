@@ -1,6 +1,7 @@
 package com.github.jimtrung.theater;
 
 import com.github.jimtrung.theater.view.HomeUI;
+import com.github.jimtrung.theater.view.ProfileUI;
 import com.github.jimtrung.theater.view.SignInUI;
 import com.github.jimtrung.theater.view.SignUpUI;
 
@@ -19,10 +20,12 @@ public class Main extends JFrame {
     HomeUI homeUI = new HomeUI(container);
     SignUpUI signUpUI = new SignUpUI(container);
     SignInUI signInUI = new SignInUI(container);
+    ProfileUI profileUI = new ProfileUI(container);
 
     container.add(homeUI.getPanel1(), "home");
     container.add(signUpUI.getPanel1(), "signup");
     container.add(signInUI.getPanel1(), "signin");
+    container.add(profileUI.getPanel1(), "profile");
 
     setContentPane(container);
     setVisible(true);

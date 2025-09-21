@@ -17,6 +17,8 @@ public class HomeUI {
   public HomeUI(JPanel container) {
     this.container = container;
 
+    panel1.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
+
     signUpButton.addActionListener(e -> {
       // Open SignUpUI
       CardLayout cl = (CardLayout) container.getLayout();

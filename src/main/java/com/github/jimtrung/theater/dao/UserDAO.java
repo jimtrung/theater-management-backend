@@ -40,16 +40,14 @@ public class UserDAO {
     }
   }
 
-  public User getByField(String fieldName, String value) throws Exception {
+  public User getByField(String fieldName, Object value) throws Exception {
     String sql = """
         SELECT id, username, email, phone_number, password, role, provider, token, otp, verified, created_at, updated_at
         FROM users
-        WHERE ? = ?;
-        """;
+        WHERE\s""" + fieldName + " = ?;";
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, fieldName);
-      ps.setObject(2, value);
+      ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
 
       if (rs.next()) {
@@ -59,37 +57,32 @@ public class UserDAO {
             rs.getString("email"),
             rs.getString("phone_number"),
             rs.getString("password"),
-            (UserRole) rs.getObject("role"),
-            (Provider) rs.getObject("provider"),
+            UserRole.valueOf(rs.getString("role")),
+            Provider.valueOf(rs.getString("provider")),
             rs.getString("token"),
             rs.getInt("otp"),
             rs.getBoolean("verified"),
-            (OffsetDateTime) rs.getObject("created_at"),
-            (OffsetDateTime) rs.getObject("updated_at")
+            rs.getObject("created_at", OffsetDateTime.class),
+            rs.getObject("updated_at", OffsetDateTime.class)
         );
       }
 
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to fetch user by " + fieldName, e);
+      throw new RuntimeException("Failed to fetch user by " + fieldName + ": " + e);
     }
 
     return null;
   }
 
   public void updateByField(UUID id, String fieldName, Object value) throws Exception {
-    String sql = """
-        UPDATE users
-        SET ? = ?
-        WHERE id = ?;
-        """;
+    String sql = "UPDATE users SET " + fieldName + " = ? WHERE id = ?";
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, fieldName);
-      ps.setObject(2, value);
-      ps.setObject(3, id);
+      ps.setObject(1, value);
+      ps.setObject(2, id);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to update user by " + fieldName, e);
+      throw new RuntimeException("Failed to update user by " + fieldName + ": " + e);
     }
   }
 
