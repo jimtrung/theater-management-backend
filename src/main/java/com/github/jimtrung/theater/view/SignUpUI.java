@@ -4,11 +4,15 @@ import com.github.jimtrung.theater.controller.UserController;
 import com.github.jimtrung.theater.dao.Database;
 import com.github.jimtrung.theater.dao.UserDAO;
 import com.github.jimtrung.theater.model.User;
+import com.github.jimtrung.theater.util.SessionTokenUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.UUID;
 
 public class SignUpUI {
   private JTextField usernameField;
@@ -30,6 +34,13 @@ public class SignUpUI {
     this.container = container;
 
     panel1.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
+
+    panel1.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent e) {
+        handleOnOpen();
+      }
+    });
 
     Database dtb = null;
     try {
@@ -68,5 +79,20 @@ public class SignUpUI {
 
   public JPanel getPanel1() {
     return panel1;
+  }
+
+  private void handleOnOpen() {
+    UUID userId;
+
+    try {
+      userId = SessionTokenUtil.loadAndDecodeToken();
+    } catch (Exception e) {
+      userId = null;
+    }
+
+    if (userId != null) {
+      CardLayout cl = (CardLayout) container.getLayout();
+      cl.show(container, "profile");
+    }
   }
 }

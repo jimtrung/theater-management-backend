@@ -1,5 +1,6 @@
 package com.github.jimtrung.theater;
 
+import com.github.jimtrung.theater.util.SessionTokenUtil;
 import com.github.jimtrung.theater.view.HomeUI;
 import com.github.jimtrung.theater.view.ProfileUI;
 import com.github.jimtrung.theater.view.SignInUI;
@@ -7,6 +8,7 @@ import com.github.jimtrung.theater.view.SignUpUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.UUID;
 
 public class Main extends JFrame {
   public Main() {
@@ -29,6 +31,21 @@ public class Main extends JFrame {
 
     setContentPane(container);
     setVisible(true);
+
+    UUID userId;
+
+    try {
+      userId = SessionTokenUtil.loadAndDecodeToken();
+    } catch (Exception e) {
+      userId = null;
+    }
+
+    if (userId != null) {
+      CardLayout cl = (CardLayout) container.getLayout();
+      cl.show(container, "profile");
+      container.revalidate();
+      container.repaint();
+    }
   }
 
   public static void main(String[] args) {

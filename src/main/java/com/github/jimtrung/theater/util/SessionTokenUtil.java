@@ -1,44 +1,43 @@
 package com.github.jimtrung.theater.util;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Base64;
+import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.Key;
+import java.util.Date;
 import java.util.UUID;
 
 public class SessionTokenUtil {
-  public static void generateSessionToken(UUID userId) throws Exception {
-    KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-    keyGen.init(128);
-    SecretKey secretKey = keyGen.generateKey();
+  private static final Path TOKEN_FILE = Path.of("session.jwt");
 
-    Cipher cipher = Cipher.getInstance("AES");
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-    byte[] encrypted = cipher.doFinal(userId.toString().getBytes());
+  private static final Key key = Keys.hmacShaKeyFor(Dotenv.load().get("JWT_SECRET").getBytes());
 
-    String encoded =  Base64.getEncoder().encodeToString(encrypted);
+  private static final long EXPIRATION = 1000 * 60 * 60 * 24;
 
-    try (FileWriter fw = new FileWriter("session.enc")) {
-      fw.write(encoded);
-    }
+  public static void generateAndStoreToken(UUID userId) throws Exception {
+    String token = Jwts.builder()
+        .setSubject(userId.toString())
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+        .signWith(key)
+        .compact();
+
+    Files.writeString(TOKEN_FILE, token);
   }
 
-  public static String getKey() throws Exception {
-    KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-    keyGen.init(128);
-    SecretKey secretKey = keyGen.generateKey();
+  public static UUID loadAndDecodeToken() throws Exception {
+    String token = Files.readString(TOKEN_FILE);
 
-    Cipher cipher = Cipher.getInstance("AES");
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+    String subject = Jwts.parserBuilder()
+        .setSigningKey(key)
+        .build()
+        .parseClaimsJws(token)
+        .getBody()
+        .getSubject();
 
-    BufferedReader br = new BufferedReader(new FileReader("session.enc"));
-    String reader = br.readLine();
-
-    byte[] decoded = Base64.getDecoder().decode(reader);
-    cipher.init(Cipher.DECRYPT_MODE, secretKey);
-    return new String(cipher.doFinal(decoded));
+    return UUID.fromString(subject);
   }
 }

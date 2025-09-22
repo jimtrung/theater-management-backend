@@ -10,6 +10,7 @@ import com.github.jimtrung.theater.util.TokenUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Time;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -121,7 +122,7 @@ public class UserController {
       throw new Exception("Password is empty");
     }
 
-    // Get user data based on usernam
+    // Get user data based on username
     User existingUser = userDAO.getByField("username", user.getUsername());
 
     // Compare password
@@ -130,6 +131,10 @@ public class UserController {
     }
 
     // Create a session token
-    SessionTokenUtil.generateSessionToken(existingUser.getId());
+    SessionTokenUtil.generateAndStoreToken(existingUser.getId());
+  }
+
+  public User getUser(UUID userId) throws Exception {
+    return userDAO.getByField("id", userId);
   }
 }
