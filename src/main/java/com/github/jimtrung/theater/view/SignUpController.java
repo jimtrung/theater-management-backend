@@ -1,9 +1,8 @@
-package com.github.jimtrung.theater;
+package com.github.jimtrung.theater.view;
 
 import com.github.jimtrung.theater.controller.UserController;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.util.SessionTokenUtil;
-import com.github.jimtrung.theater.view.SignUpUI;
 
 import javax.swing.*;
 import java.awt.*;
