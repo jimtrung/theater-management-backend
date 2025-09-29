@@ -3,67 +3,69 @@ package com.github.jimtrung.theater;
 import com.github.jimtrung.theater.controller.UserController;
 import com.github.jimtrung.theater.dao.Database;
 import com.github.jimtrung.theater.dao.UserDAO;
-import com.github.jimtrung.theater.util.SessionTokenUtil;
 import com.github.jimtrung.theater.view.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.UUID;
+import java.util.Objects;
 
-public class Main extends JFrame {
-  public Main() {
+public class Main extends Application {
+  @Override
+  public void start(Stage stage) throws Exception {
     Database dtb = null;
     try {
       dtb = new Database();
-    } catch (Exception ex) {
-      System.out.println(ex.getMessage());
-      System.exit(0);
+    } catch (Exception e) {
+      System.out.println(e);
+      System.exit(1);
     }
+
     UserDAO userDAO = new UserDAO(dtb.getConnection());
     UserController userController = new UserController(userDAO);
 
-    setTitle("Theater Management");
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setSize(800, 600);
-    setLocationRelativeTo(null);
+    StackPane root = new StackPane();
+    ScreenController screenController = new ScreenController(root);
 
-    JPanel container = new JPanel(new CardLayout());
+    // Home
+    FXMLLoader homeLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/fxml/home.fxml")));
+    screenController.addScreen("home", homeLoader);
+    HomeController homeController = homeLoader.getController();
+    homeController.setScreenController(screenController);
 
-    HomeUI homeUI = new HomeUI();
-    new HomeController(homeUI, container);
-    container.add(homeUI.getPanel1(), "home");
+    // Sign Up
+    FXMLLoader signUpLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/fxml/signup.fxml")));
+    screenController.addScreen("signup", signUpLoader);
+    SignUpController signUpController = signUpLoader.getController();
+    signUpController.setScreenController(screenController);
+    signUpController.setUserController(userController);
 
-    SignUpUI signUpUI = new SignUpUI();
-    new SignUpController(signUpUI, container, userController);
-    container.add(signUpUI.getPanel1(), "signup");
+    // Sign In
+    FXMLLoader signInLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/fxml/signin.fxml")));
+    screenController.addScreen("signin", signInLoader);
+    SignInController signInController = signInLoader.getController();
+    signInController.setScreenController(screenController);
+    signInController.setUserController(userController);
 
-    SignInUI signInUI = new SignInUI();
-    new SignInController(signInUI, container, userController);
-    container.add(signInUI.getPanel1(), "signin");
+    // Profile
+    FXMLLoader profileLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/fxml/profile.fxml")));
+    screenController.addScreen("profile", profileLoader);
+    ProfileController profileController = profileLoader.getController();
+    profileController.setScreenController(screenController);
+    profileController.setUserController(userController);
 
-    ProfileUI profileUI = new ProfileUI(container);
-    container.add(profileUI.getPanel1(), "profile");
+    // Start with home screen
+    screenController.activate("home");
 
-    setContentPane(container);
-    setVisible(true);
-
-    UUID userId;
-
-    try {
-      userId = SessionTokenUtil.loadAndDecodeToken();
-    } catch (Exception e) {
-      userId = null;
-    }
-
-    if (userId != null) {
-      CardLayout cl = (CardLayout) container.getLayout();
-      cl.show(container, "profile");
-      container.revalidate();
-      container.repaint();
-    }
+    Scene scene = new Scene(screenController.getRoot(), 1400, 700);
+    stage.setTitle("Theater Management");
+    stage.setScene(scene);
+    stage.show();
   }
 
   public static void main(String[] args) {
-    new Main();
+    launch(args);
   }
 }

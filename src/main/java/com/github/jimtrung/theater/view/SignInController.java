@@ -3,62 +3,58 @@ package com.github.jimtrung.theater.view;
 import com.github.jimtrung.theater.controller.UserController;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.util.SessionTokenUtil;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.UUID;
 
 public class SignInController {
-  private final SignInUI view;
-  private final JPanel container;
-  private final UserController userController;
+  private ScreenController screenController;
+  private UserController userController;
 
-  public SignInController(SignInUI view, JPanel container, UserController userController) {
-    this.view = view;
-    this.container = container;
-    this.userController = userController;
-
-    view.getPanel1().addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentShown(ComponentEvent e) {
-        handleOnOpen();
-      }
-    });
-
-    view.getBackButton().addActionListener(_ -> show("home"));
-    view.getSignInButton().addActionListener(_ -> handleSignIn());
+  public void setScreenController(ScreenController screenController) {
+    this.screenController = screenController;
   }
 
-  private void handleOnOpen() {
+  public void setUserController(UserController userController) {
+    this.userController = userController;
+  }
+
+  public void handleOnOpen() {
     UUID userId;
     try {
       userId = SessionTokenUtil.loadAndDecodeToken();
     } catch (Exception e) {
       userId = null;
     }
-    if (userId != null) show("home");
+    if (userId != null) screenController.activate("profile");
   }
 
-  public void handleSignIn() {
+  @FXML
+  private TextField usernameField;
+
+  @FXML
+  private PasswordField passwordField;
+
+  @FXML
+  public void handleBackButton(ActionEvent event) {
+    screenController.activate("home");
+  }
+
+  @FXML
+  public void handleSignInButton(ActionEvent event) {
     User user = new User();
-    user.setUsername(view.getUsernameField().getText());
-    user.setPassword(new String(view.getPasswordField().getPassword()));
+    user.setUsername(usernameField.getText());
+    user.setPassword(passwordField.getText());
 
     try {
       userController.signIn(user);
-    } catch (Exception ex) {
-      System.out.println(ex);
-      System.exit(0);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to sign in");
     }
 
-    CardLayout cl = (CardLayout) container.getLayout();
-    cl.show(container, "profile");
-  }
-
-  private void show(String card) {
-    CardLayout cl = (CardLayout) container.getLayout();
-    cl.show(container, card);
+    screenController.activate("profile");
   }
 }

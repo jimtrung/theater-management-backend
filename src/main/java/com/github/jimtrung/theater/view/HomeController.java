@@ -1,47 +1,49 @@
 package com.github.jimtrung.theater.view;
 
 import com.github.jimtrung.theater.util.SessionTokenUtil;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.UUID;
 
 public class HomeController {
-  private final HomeUI view;
-  private final JPanel container;
+  private ScreenController screenController;
 
-  public HomeController(HomeUI view,  JPanel container) {
-    this.view = view;
-    this.container = container;
-
-    view.getPanel1().addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentShown(ComponentEvent e) {
-        handleOnOpen();
-      }
-    });
-
-    view.getSignUpButton().addActionListener(_ -> show("signup"));
-    view.getSignInButton().addActionListener(_ -> show("signin"));
-    view.getSettingsButton().addActionListener(_ -> show("settings"));
+  public void setScreenController(ScreenController screenController) {
+    this.screenController = screenController;
   }
 
-  private void handleOnOpen() {
+  public void handleOnOpen() {
     UUID userId;
-
     try {
       userId = SessionTokenUtil.loadAndDecodeToken();
     } catch (Exception e) {
       userId = null;
     }
-
-    if (userId != null) show("signup");
+    if (userId != null) screenController.activate("profile");
   }
 
-  private void show(String card) {
-    CardLayout cl = (CardLayout) container.getLayout();
-    cl.show(container, card);
+  @FXML
+  private Label titleLabel;
+
+  @FXML
+  private Button signupButton;
+
+  @FXML
+  private Button signinButton;
+
+  @FXML
+  private Button settingsButton;
+
+  @FXML
+  public void handleSignUpButton(ActionEvent event) {
+    screenController.activate("signup");
+  }
+
+  @FXML
+  public void handleSignInButton(ActionEvent event) {
+    screenController.activate("signin");
   }
 }

@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 
 import java.util.UUID;
 
-public class SignUpController {
+public class ProfileController {
   private ScreenController screenController;
   private UserController userController;
 
@@ -29,20 +29,44 @@ public class SignUpController {
     } catch (Exception e) {
       userId = null;
     }
-    if (userId != null) screenController.activate("profile");
+
+    if (userId != null) {
+      User userInfo = null;
+      try {
+        userInfo = userController.getUser(userId);
+      } catch (Exception e) {
+        System.out.println("Failed to fetch user: " + e.getMessage());
+        System.exit(0);
+      }
+
+      usernameLabel.setText(userInfo.getUsername());
+      emailLabel.setText(userInfo.getEmail());
+      phoneNumberLabel.setText(userInfo.getPhoneNumber());
+      passwordLabel.setText(userInfo.getPassword());
+      verifiedLabel.setText(userInfo.getVerified().toString());
+      createdAtLabel.setText(userInfo.getCreatedAt().toString());
+    } else {
+      screenController.activate("home");
+    }
   }
 
   @FXML
-  private TextField usernameField;
+  private TextField usernameLabel;
 
   @FXML
-  private TextField emailField;
+  private TextField emailLabel;
 
   @FXML
-  private TextField phoneNumberField;
+  private TextField phoneNumberLabel;
 
   @FXML
-    private PasswordField passwordField;
+  private PasswordField passwordLabel;
+
+  @FXML
+  private TextField verifiedLabel;
+
+  @FXML
+  private TextField createdAtLabel;
 
   @FXML
   public void handleBackButton(ActionEvent event) {
@@ -50,19 +74,5 @@ public class SignUpController {
   }
 
   @FXML
-  public void handleSignUpButton(ActionEvent event) {
-    User user = new User();
-    user.setUsername(usernameField.getText());
-    user.setEmail(emailField.getText());
-    user.setPhoneNumber(phoneNumberField.getText());
-    user.setPassword(passwordField.getText());
-
-    try {
-      userController.signUp(user);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to sign up");
-    }
-
-    screenController.activate("signin");
-  }
+  public void handleEditButton(ActionEvent event) {}
 }
