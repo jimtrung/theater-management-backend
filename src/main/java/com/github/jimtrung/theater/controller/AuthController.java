@@ -1,5 +1,6 @@
 package com.github.jimtrung.theater.controller;
 
+import com.github.jimtrung.theater.dto.RefreshRequest;
 import com.github.jimtrung.theater.dto.TokenPair;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.service.UserService;
@@ -33,8 +34,8 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<String> refresh(@RequestBody String refreshToken) {
-    String newAccessToken = userService.refresh(refreshToken);
+  public ResponseEntity<String> refresh(@RequestBody RefreshRequest refreshRequest) {
+    String newAccessToken = userService.refresh(refreshRequest.refreshToken());
 
     if (newAccessToken == null) {
       return ResponseEntity
