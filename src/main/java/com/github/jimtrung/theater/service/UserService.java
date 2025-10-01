@@ -1,11 +1,12 @@
 package com.github.jimtrung.theater.service;
 
 import com.github.jimtrung.theater.dao.UserDAO;
+import com.github.jimtrung.theater.dto.TokenPair;
 import com.github.jimtrung.theater.model.Provider;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.model.UserRole;
+import com.github.jimtrung.theater.util.AuthTokenUtil;
 import com.github.jimtrung.theater.util.OTPUtil;
-import com.github.jimtrung.theater.util.SessionTokenUtil;
 import com.github.jimtrung.theater.util.TokenUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,11 @@ import java.util.UUID;
 @Service
 public class UserService {
   private final UserDAO userDAO;
-  private final SessionTokenUtil sessionTokenUtil;
+  private final AuthTokenUtil authTokenUtil; 
 
-  public UserService(UserDAO userDAO, SessionTokenUtil sessionTokenUtil) {
+  public UserService(UserDAO userDAO, AuthTokenUtil authTokenUtil) { 
     this.userDAO = userDAO;
-    this.sessionTokenUtil = sessionTokenUtil;
+    this.authTokenUtil = authTokenUtil;
   }
 
   public void signUp(User user) {
@@ -47,17 +48,28 @@ public class UserService {
     userDAO.insert(user);
   }
 
-  public void signIn(User user) {
+  public TokenPair signIn(User user) {
     if (user.getUsername().isEmpty()) throw new IllegalArgumentException("Username is empty");
     if (user.getPassword().isEmpty()) throw new IllegalArgumentException("Password is empty");
 
     User existingUser = userDAO.getByField("username", user.getUsername());
     if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) throw new IllegalArgumentException("Wrong password");
 
-    sessionTokenUtil.generateToken(existingUser.getId());
+    String refreshToken = authTokenUtil.generateRefreshToken(existingUser.getId());
+    String accessToken = authTokenUtil.generateAccessToken(existingUser.getId());
+
+    return new TokenPair(accessToken, refreshToken);
   }
 
   public User getUser(UUID userId) {
     return userDAO.getByField("id", userId);
+  }
+
+  public String refresh(String refreshToken) {
+    if (authTokenUtil.isTokenExpired(refreshToken)) {
+      return null;
+    }
+    UUID userId = authTokenUtil.parseToken(refreshToken);
+    return authTokenUtil.generateAccessToken(userId);
   }
 }
