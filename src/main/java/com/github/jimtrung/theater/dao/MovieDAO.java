@@ -2,48 +2,53 @@ package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.model.Movie;
 import com.github.jimtrung.theater.model.MovieGenre;
-import com.github.jimtrung.theater.model.Provider;
-import com.github.jimtrung.theater.model.UserRole;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class MovieDAO {
-  public final Connection conn;
+  private final DataSource dataSource;
 
-  public MovieDAO(Connection conn) {
-    this.conn = conn;
+  public MovieDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
-  public void insert(Movie movie) throws Exception {
+  public void insert(Movie movie) {
     String sql = """
-        INSERT INTO movies (name, description, director_id, genres, premiere, duration, language, rated)
+        INSERT INTO movies (id, name, description, director_id, genres, premiere, duration, language, rated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, movie.getName());
-      ps.setString(2, movie.getDescription());
-      ps.setObject(3, movie.getDirectorId());
-      ps.setObject(4, movie.getGenres(), Types.OTHER);
-      ps.setObject(5, movie.getPremiere());
-      ps.setInt(6, movie.getDuration());
-      ps.setString(7, movie.getLanguage());
-      ps.setInt(8,  movie.getRated());
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+      ps.setObject(1, movie.getId());
+      ps.setString(2, movie.getName());
+      ps.setString(3, movie.getDescription());
+      ps.setObject(4, movie.getDirectorId());
+      ps.setObject(5, movie.getGenres(), Types.OTHER); // You’ll need a converter later
+      ps.setObject(6, movie.getPremiere());
+      ps.setInt(7, movie.getDuration());
+      ps.setString(8, movie.getLanguage());
+      ps.setInt(9, movie.getRated());
+
       ps.executeUpdate();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to insert a movie: " + e);
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to insert a movie", e);
     }
   }
 
-  public Movie getByField(String fieldName, Object value) throws Exception {
+  public Movie getByField(String fieldName, Object value) {
     String sql = """
         SELECT id, name, description, director_id, genres, premiere, duration, language, rated, created_at, updated_at
         FROM movies
-        WHERE\s""" + fieldName + " = ?;";
+        WHERE """ + fieldName + " = ?;";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
 
@@ -53,7 +58,7 @@ public class MovieDAO {
             (UUID) rs.getObject("director_id"),
             rs.getString("name"),
             rs.getString("description"),
-            (MovieGenre[]) rs.getObject("genres"), // Need to fix this later on
+            (MovieGenre[]) rs.getObject("genres"), // ⚠️ This won’t map automatically, needs custom handling
             (OffsetDateTime) rs.getObject("premiere"),
             rs.getInt("duration"),
             rs.getString("language"),
@@ -63,35 +68,36 @@ public class MovieDAO {
         );
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to fetch movie by " + fieldName + ": " + e);
+      throw new RuntimeException("Failed to fetch movie by " + fieldName, e);
     }
 
     return null;
   }
 
-  public void updateByField(UUID id, String fieldName, Object value) throws Exception {
+  public void updateByField(UUID id, String fieldName, Object value) {
     String sql = "UPDATE movies SET " + fieldName + " = ? WHERE id = ?";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setObject(2, id);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to update movies by " + fieldName + ": " + e);
+      throw new RuntimeException("Failed to update movies by " + fieldName, e);
     }
   }
 
-  public void delete(UUID id) throws Exception {
-    String sql = """
-            DELETE FROM movies 
-            WHERE id = ?;
-        """;
+  public void delete(UUID id) {
+    String sql = "DELETE FROM movies WHERE id = ?;";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to delete movie with the id: " + id, e);
+      throw new RuntimeException("Failed to delete movie with id: " + id, e);
     }
   }
 }

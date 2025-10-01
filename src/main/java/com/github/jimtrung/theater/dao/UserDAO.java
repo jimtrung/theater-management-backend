@@ -3,28 +3,31 @@ package com.github.jimtrung.theater.dao;
 import com.github.jimtrung.theater.model.Provider;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.model.UserRole;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Repository
 public class UserDAO {
-  /* Attribute */
-  private final Connection conn;
 
-  /* Constructor */
-  public UserDAO(Connection conn) {
-    this.conn = conn;
+  private final DataSource dataSource;
+
+  public UserDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
-  /* Functions */
-  public void insert(User user) throws Exception {
+  public void insert(User user) {
     String sql = """
-        INSERT INTO users (username, email, phone_number, password, role, provider, token, otp, verified)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO users (username, email, phone_number, password, role, provider, token, otp, verified)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setString(1, user.getUsername());
       ps.setString(2, user.getEmail());
       ps.setString(3, user.getPhoneNumber());
@@ -35,18 +38,18 @@ public class UserDAO {
       ps.setInt(8, user.getOtp());
       ps.setBoolean(9, user.getVerified());
       ps.executeUpdate();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to insert new user: " + e.toString());
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to insert new user: " + e, e);
     }
   }
 
-  public User getByField(String fieldName, Object value) throws Exception {
-    String sql = """
-        SELECT id, username, email, phone_number, password, role, provider, token, otp, verified, created_at, updated_at
-        FROM users
-        WHERE\s""" + fieldName + " = ?;";
+  public User getByField(String fieldName, Object value) {
+    String sql = "SELECT * FROM users WHERE " + fieldName + " = ? LIMIT 1";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
 
@@ -68,35 +71,38 @@ public class UserDAO {
       }
 
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to fetch user by " + fieldName + ": " + e);
+      throw new RuntimeException("Failed to fetch user by " + fieldName + ": " + e, e);
     }
 
     return null;
   }
 
-  public void updateByField(UUID id, String fieldName, Object value) throws Exception {
+  public void updateByField(UUID id, String fieldName, Object value) {
     String sql = "UPDATE users SET " + fieldName + " = ? WHERE id = ?";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setObject(2, id);
       ps.executeUpdate();
+
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to update user by " + fieldName + ": " + e);
+      throw new RuntimeException("Failed to update user by " + fieldName + ": " + e, e);
     }
   }
 
-  public void delete(UUID id) throws Exception {
-    String sql = """
-            DELETE FROM users
-            WHERE id = ?;
-        """;
+  public void delete(UUID id) {
+    String sql = "DELETE FROM users WHERE id = ?";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ps.executeUpdate();
+
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to delete user with the id: " + id, e);
+      throw new RuntimeException("Failed to delete user with id: " + id, e);
     }
   }
 }

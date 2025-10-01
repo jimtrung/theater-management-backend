@@ -1,15 +1,18 @@
 package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.model.Country;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 
+@Repository
 public class CountryDAO {
-  private final Connection conn;
+  private final DataSource dataSource;
 
-  public CountryDAO(Connection conn) {
-    this.conn = conn;
+  public CountryDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
   // --- Create ---
@@ -19,13 +22,16 @@ public class CountryDAO {
             VALUES (?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setString(1, country.getCode());
       ps.setString(2, country.getName());
       ps.setString(3, country.getIso3());
       ps.setString(4, country.getPhoneCode());
       ps.setObject(5, country.getCreatedAt());
       ps.setObject(6, country.getUpdatedAt());
+
       ps.executeUpdate();
     }
   }
@@ -34,9 +40,12 @@ public class CountryDAO {
   public Country getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM countries WHERE " + fieldName + " = ? LIMIT 1";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
+
       if (rs.next()) {
         return new Country(
             rs.getString("code"),
@@ -55,7 +64,10 @@ public class CountryDAO {
   // --- Update single field ---
   public void updateByField(String code, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE countries SET " + fieldName + " = ? WHERE code = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setString(2, code);
       ps.executeUpdate();
@@ -65,7 +77,10 @@ public class CountryDAO {
   // --- Delete ---
   public void delete(String code) throws SQLException {
     String sql = "DELETE FROM countries WHERE code = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setString(1, code);
       ps.executeUpdate();
     }

@@ -1,16 +1,19 @@
 package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.model.Showtime;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Repository
 public class ShowtimeDAO {
-  private final Connection conn;
+  private final DataSource dataSource;
 
-  public ShowtimeDAO(Connection conn) {
-    this.conn = conn;
+  public ShowtimeDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
   public void insert(Showtime showtime) throws SQLException {
@@ -19,7 +22,9 @@ public class ShowtimeDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, showtime.getId());
       ps.setObject(2, showtime.getMovieId());
       ps.setObject(3, showtime.getAuditoriumId());
@@ -27,6 +32,7 @@ public class ShowtimeDAO {
       ps.setObject(5, showtime.getEndTime());
       ps.setObject(6, showtime.getCreatedAt());
       ps.setObject(7, showtime.getUpdatedAt());
+
       ps.executeUpdate();
     }
   }
@@ -34,7 +40,9 @@ public class ShowtimeDAO {
   public Showtime getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM showtimes WHERE " + fieldName + " = ? LIMIT 1";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
@@ -55,7 +63,10 @@ public class ShowtimeDAO {
 
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE showtimes SET " + fieldName + " = ? WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setObject(2, id);
       ps.executeUpdate();
@@ -64,7 +75,10 @@ public class ShowtimeDAO {
 
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM showtimes WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ps.executeUpdate();
     }

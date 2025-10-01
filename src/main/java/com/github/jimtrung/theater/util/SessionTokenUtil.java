@@ -1,43 +1,39 @@
 package com.github.jimtrung.theater.util;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
 
+@Component
 public class SessionTokenUtil {
-  private static final Path TOKEN_FILE = Path.of("session.jwt");
+  private final Key key;
+  private static final long EXPIRATION = 1000 * 60 * 60 * 24; // 1 day
 
-  private static final Key key = Keys.hmacShaKeyFor(Dotenv.load().get("JWT_SECRET").getBytes());
+  public SessionTokenUtil(@Value("${jwt.secret}") String secret) {
+    this.key = Keys.hmacShaKeyFor(secret.getBytes());
+  }
 
-  private static final long EXPIRATION = 1000 * 60 * 60 * 24;
-
-  public static void generateAndStoreToken(UUID userId) throws Exception {
-    String token = Jwts.builder()
+  public String generateToken(UUID userId) {
+    return Jwts.builder()
         .setSubject(userId.toString())
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
         .signWith(key)
         .compact();
-
-    Files.writeString(TOKEN_FILE, token);
   }
 
-  public static UUID loadAndDecodeToken() throws Exception {
-    String token = Files.readString(TOKEN_FILE);
-
+  public UUID parseToken(String token) {
     String subject = Jwts.parserBuilder()
         .setSigningKey(key)
         .build()
         .parseClaimsJws(token)
         .getBody()
         .getSubject();
-
     return UUID.fromString(subject);
   }
 }

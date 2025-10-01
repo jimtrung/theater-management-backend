@@ -2,16 +2,19 @@ package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.model.Actor;
 import com.github.jimtrung.theater.model.Gender;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Repository
 public class ActorDAO {
-  private final Connection conn;
+  private final javax.sql.DataSource dataSource;
 
-  public ActorDAO(Connection conn) {
-    this.conn = conn;
+  public ActorDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
   // --- Create ---
@@ -21,7 +24,9 @@ public class ActorDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, actor.getId());
       ps.setString(2, actor.getFirstName());
       ps.setString(3, actor.getLastName());
@@ -31,6 +36,7 @@ public class ActorDAO {
       ps.setString(7, actor.getCountryCode());
       ps.setObject(8, actor.getCreatedAt());
       ps.setObject(9, actor.getUpdatedAt());
+
       ps.executeUpdate();
     }
   }
@@ -39,9 +45,12 @@ public class ActorDAO {
   public Actor getById(UUID id) throws SQLException {
     String sql = "SELECT * FROM actors WHERE id = ?";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ResultSet rs = ps.executeQuery();
+
       if (rs.next()) {
         return new Actor(
             (UUID) rs.getObject("id"),
@@ -62,7 +71,9 @@ public class ActorDAO {
   // --- Update ---
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE actors SET " + fieldName + " = ? WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setObject(2, id);
       ps.executeUpdate();
@@ -72,7 +83,9 @@ public class ActorDAO {
   // --- Delete ---
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM actors WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ps.executeUpdate();
     }

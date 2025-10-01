@@ -1,16 +1,19 @@
 package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.model.Ticket;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Repository
 public class TicketDAO {
-  private final Connection conn;
+  private final DataSource dataSource;
 
-  public TicketDAO(Connection conn) {
-    this.conn = conn;
+  public TicketDAO(DataSource dataSource) {
+    this.dataSource = dataSource;
   }
 
   public void insert(Ticket ticket) throws SQLException {
@@ -19,7 +22,9 @@ public class TicketDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?);
         """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, ticket.getId());
       ps.setObject(2, ticket.getUserId());
       ps.setObject(3, ticket.getShowtimeId());
@@ -27,6 +32,7 @@ public class TicketDAO {
       ps.setInt(5, ticket.getPrice());
       ps.setObject(6, ticket.getCreatedAt());
       ps.setObject(7, ticket.getUpdatedAt());
+
       ps.executeUpdate();
     }
   }
@@ -34,7 +40,9 @@ public class TicketDAO {
   public Ticket getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM tickets WHERE " + fieldName + " = ? LIMIT 1";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) {
@@ -55,7 +63,10 @@ public class TicketDAO {
 
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE tickets SET " + fieldName + " = ? WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, value);
       ps.setObject(2, id);
       ps.executeUpdate();
@@ -64,7 +75,10 @@ public class TicketDAO {
 
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM tickets WHERE id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
       ps.setObject(1, id);
       ps.executeUpdate();
     }
