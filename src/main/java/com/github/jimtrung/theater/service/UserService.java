@@ -6,10 +6,13 @@ import com.github.jimtrung.theater.model.Provider;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.model.UserRole;
 import com.github.jimtrung.theater.util.AuthTokenUtil;
+import com.github.jimtrung.theater.util.EmailValidator;
 import com.github.jimtrung.theater.util.OTPUtil;
 import com.github.jimtrung.theater.util.TokenUtil;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -19,12 +22,14 @@ public class UserService {
   private final AuthTokenUtil authTokenUtil;
   private final TokenUtil tokenUtil;
   private final OTPUtil otpUtil;
+  private final EmailValidator emailValidator;
 
-  public UserService(UserDAO userDAO, AuthTokenUtil authTokenUtil, TokenUtil tokenUtil, OTPUtil otpUtil) {
+  public UserService(UserDAO userDAO, AuthTokenUtil authTokenUtil, TokenUtil tokenUtil, OTPUtil otpUtil, EmailValidator emailValidator) {
     this.userDAO = userDAO;
     this.authTokenUtil = authTokenUtil;
     this.tokenUtil = tokenUtil;
     this.otpUtil = otpUtil;
+    this.emailValidator = emailValidator;
   }
 
   public void signUp(User user) {
@@ -32,22 +37,30 @@ public class UserService {
     if (user.getEmail().isEmpty()) throw new IllegalArgumentException("Email is empty");
     if (user.getPhoneNumber().isEmpty()) throw new IllegalArgumentException("Phone number is empty");
     if (user.getPassword().isEmpty()) throw new IllegalArgumentException("Password is empty");
+    if (!emailValidator.isValidEmail(user.getEmail())) throw new IllegalArgumentException("Invalid email addresses");
 
     User existingUser = null;
     try { existingUser = userDAO.getByField("username", user.getUsername()); } catch (RuntimeException ignored) {}
     try { existingUser = userDAO.getByField("email", user.getEmail()); } catch (RuntimeException ignored) {}
     try { existingUser = userDAO.getByField("phoneNumber", user.getPhoneNumber()); } catch (RuntimeException ignored) {}
 
-    if (existingUser != null) throw new IllegalArgumentException("User already exists");
+    if (existingUser != null) throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
 
     String passwordHash = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
     user.setPassword(passwordHash);
 
-    user.setToken(tokenUtil.generateToken());
+    String token = tokenUtil.generateToken();
+    user.setToken(token);
     user.setOtp(otpUtil.generateOTP());
     user.setRole(UserRole.USER);
     user.setProvider(Provider.LOCAL);
     user.setVerified(false);
+
+    try {
+      emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/auth/verify/" + token);
+    } catch (Exception e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+    }
 
     userDAO.insert(user);
   }
