@@ -16,11 +16,15 @@ import java.util.UUID;
 @Service
 public class UserService {
   private final UserDAO userDAO;
-  private final AuthTokenUtil authTokenUtil; 
+  private final AuthTokenUtil authTokenUtil;
+  private final TokenUtil tokenUtil;
+  private final OTPUtil otpUtil;
 
-  public UserService(UserDAO userDAO, AuthTokenUtil authTokenUtil) { 
+  public UserService(UserDAO userDAO, AuthTokenUtil authTokenUtil, TokenUtil tokenUtil, OTPUtil otpUtil) {
     this.userDAO = userDAO;
     this.authTokenUtil = authTokenUtil;
+    this.tokenUtil = tokenUtil;
+    this.otpUtil = otpUtil;
   }
 
   public void signUp(User user) {
@@ -39,8 +43,8 @@ public class UserService {
     String passwordHash = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
     user.setPassword(passwordHash);
 
-    user.setToken(TokenUtil.generateToken());
-    user.setOtp(OTPUtil.generateOTP());
+    user.setToken(tokenUtil.generateToken());
+    user.setOtp(otpUtil.generateOTP());
     user.setRole(UserRole.USER);
     user.setProvider(Provider.LOCAL);
     user.setVerified(false);
