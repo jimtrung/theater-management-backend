@@ -17,9 +17,9 @@ public class MovieDAO {
 
   public void insert(Movie movie) {
     String sql = """
-        INSERT INTO movies (id, name, description, director_id, genres, premiere, duration, language, rated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO movies (id, name, description, director_id, genres, premiere, duration, language, rated)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -42,9 +42,9 @@ public class MovieDAO {
 
   public Movie getByField(String fieldName, Object value) {
     String sql = """
-        SELECT id, name, description, director_id, genres, premiere, duration, language, rated, created_at, updated_at
-        FROM movies
-        WHERE """ + fieldName + " = ?;";
+      SELECT id, name, description, director_id, genres, premiere, duration, language, rated, created_at, updated_at
+      FROM movies
+      WHERE """ + fieldName + " = ?;";
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

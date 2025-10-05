@@ -18,9 +18,9 @@ public class AuditoriumDAO {
 
   public void insert(Auditorium auditorium) throws SQLException {
     String sql = """
-            INSERT INTO auditoriums (id, capacity, created_at, updated_at)
-            VALUES (?, ?, ?, ?);
-        """;
+      INSERT INTO auditoriums (id, capacity, created_at, updated_at)
+      VALUES (?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

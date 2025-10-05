@@ -16,12 +16,11 @@ public class MovieActorsDAO {
     this.dataSource = dataSource;
   }
 
-  // --- Create ---
   public void insert(MovieActors ma) throws SQLException {
     String sql = """
-            INSERT INTO movie_actors (movie_id, actor_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?);
-        """;
+      INSERT INTO movie_actors (movie_id, actor_id, created_at, updated_at)
+      VALUES (?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -35,7 +34,6 @@ public class MovieActorsDAO {
     }
   }
 
-  // --- Read single record by field ---
   public MovieActors getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM movie_actors WHERE " + fieldName + " = ? LIMIT 1";
 
@@ -55,10 +53,9 @@ public class MovieActorsDAO {
       }
     }
 
-    return null; // no record found
+    return null;
   }
 
-  // --- Update ---
   public void updateByField(UUID movieId, UUID actorId, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE movie_actors SET " + fieldName + " = ? WHERE movie_id = ? AND actor_id = ?";
 
@@ -73,7 +70,6 @@ public class MovieActorsDAO {
     }
   }
 
-  // --- Delete ---
   public void delete(UUID movieId, UUID actorId) throws SQLException {
     String sql = "DELETE FROM movie_actors WHERE movie_id = ? AND actor_id = ?";
 

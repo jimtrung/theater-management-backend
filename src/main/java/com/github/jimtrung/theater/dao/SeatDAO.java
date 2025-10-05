@@ -16,12 +16,11 @@ public class SeatDAO {
     this.dataSource = dataSource;
   }
 
-  // --- Create ---
   public void insert(Seat seat) throws SQLException {
     String sql = """
-            INSERT INTO seats (id, auditorium_id, row, number, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO seats (id, auditorium_id, row, number, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -37,7 +36,6 @@ public class SeatDAO {
     }
   }
 
-  // --- Read ---
   public Seat getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM seats WHERE " + fieldName + " = ? LIMIT 1";
 
@@ -61,7 +59,6 @@ public class SeatDAO {
     return null;
   }
 
-  // --- Update ---
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE seats SET " + fieldName + " = ? WHERE id = ?";
 
@@ -74,7 +71,6 @@ public class SeatDAO {
     }
   }
 
-  // --- Delete ---
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM seats WHERE id = ?";
 

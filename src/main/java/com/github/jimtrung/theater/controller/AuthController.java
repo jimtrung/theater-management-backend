@@ -1,6 +1,7 @@
 package com.github.jimtrung.theater.controller;
 
 import com.github.jimtrung.theater.dto.RefreshRequest;
+import com.github.jimtrung.theater.dto.SignUpRequest;
 import com.github.jimtrung.theater.dto.TokenPair;
 import com.github.jimtrung.theater.model.User;
 import com.github.jimtrung.theater.service.UserService;
@@ -18,15 +19,25 @@ public class AuthController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<String> signUp(@RequestBody User user) {
-    userService.signUp(user);
+  public ResponseEntity<String> signUp(@RequestBody SignUpRequest req) {
+    User newUser = new User();
+    newUser.setUsername(req.username());
+    newUser.setEmail(req.email());
+    newUser.setPhoneNumber(req.phoneNumber());
+    newUser.setPassword(req.password());
+
+    userService.signUp(newUser);
     return ResponseEntity
       .status(HttpStatus.CREATED)
       .body("User signed up successfully");
   }
 
   @PostMapping("/signin")
-  public ResponseEntity<TokenPair> signIn(@RequestBody User user) {
+  public ResponseEntity<TokenPair> signIn(@RequestBody SignUpRequest req) {
+    User user = new User();
+    user.setUsername(req.username());
+    user.setPassword(req.password());
+
     TokenPair tokenPair = userService.signIn(user);
     return ResponseEntity
       .status(HttpStatus.CREATED)

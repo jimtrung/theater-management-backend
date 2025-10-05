@@ -17,12 +17,11 @@ public class ActorDAO {
     this.dataSource = dataSource;
   }
 
-  // --- Create ---
   public void insert(Actor actor) throws SQLException {
     String sql = """
-            INSERT INTO actors (id, first_name, last_name, dob, age, gender, country_code, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO actors (id, first_name, last_name, dob, age, gender, country_code, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -41,7 +40,6 @@ public class ActorDAO {
     }
   }
 
-  // --- Read ---
   public Actor getById(UUID id) throws SQLException {
     String sql = "SELECT * FROM actors WHERE id = ?";
 
@@ -68,7 +66,6 @@ public class ActorDAO {
     return null;
   }
 
-  // --- Update ---
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE actors SET " + fieldName + " = ? WHERE id = ?";
     try (Connection conn = dataSource.getConnection();
@@ -80,7 +77,6 @@ public class ActorDAO {
     }
   }
 
-  // --- Delete ---
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM actors WHERE id = ?";
     try (Connection conn = dataSource.getConnection();

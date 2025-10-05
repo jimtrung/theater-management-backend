@@ -18,9 +18,9 @@ public class TicketDAO {
 
   public void insert(Ticket ticket) throws SQLException {
     String sql = """
-            INSERT INTO tickets (id, user_id, showtime_id, seat_id, price, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO tickets (id, user_id, showtime_id, seat_id, price, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

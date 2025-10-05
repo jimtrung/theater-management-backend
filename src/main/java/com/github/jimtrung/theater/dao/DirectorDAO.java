@@ -17,12 +17,11 @@ public class DirectorDAO {
     this.dataSource = dataSource;
   }
 
-  // --- Create ---
   public void insert(Director director) throws SQLException {
     String sql = """
-            INSERT INTO directors (id, first_name, last_name, dob, age, gender, country_code, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO directors (id, first_name, last_name, dob, age, gender, country_code, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -41,7 +40,6 @@ public class DirectorDAO {
     }
   }
 
-  // --- Read ---
   public Director getById(UUID id) throws SQLException {
     String sql = "SELECT * FROM directors WHERE id = ?";
 
@@ -68,7 +66,6 @@ public class DirectorDAO {
     return null;
   }
 
-  // --- Update ---
   public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE directors SET " + fieldName + " = ? WHERE id = ?";
 
@@ -81,7 +78,6 @@ public class DirectorDAO {
     }
   }
 
-  // --- Delete ---
   public void delete(UUID id) throws SQLException {
     String sql = "DELETE FROM directors WHERE id = ?";
 

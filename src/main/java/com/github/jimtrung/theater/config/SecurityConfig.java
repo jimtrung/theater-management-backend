@@ -28,14 +28,14 @@ public class SecurityConfig {
   }
 
   /**
-   * Chain #1 — Public API endpoints (auth)
+   * Chain #1 — Public API endpoints
    * These should NEVER trigger OAuth redirect
    */
   @Bean
   @Order(1)
   public SecurityFilterChain authChain(HttpSecurity http) throws Exception {
     http
-        .securityMatcher("/auth/**") // Only match /auth/**
+        .securityMatcher("/auth/**", "/user/**")
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

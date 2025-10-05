@@ -15,7 +15,8 @@ public class Actor {
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
-  public Actor(UUID id, String firstName, String lastName, Date dob, Integer age, Gender gender, String countryCode, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+  public Actor(UUID id, String firstName, String lastName, Date dob, Integer age, Gender gender, String countryCode,
+    OffsetDateTime createdAt, OffsetDateTime updatedAt) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;

@@ -9,6 +9,7 @@ import com.github.jimtrung.theater.util.AuthTokenUtil;
 import com.github.jimtrung.theater.util.EmailValidator;
 import com.github.jimtrung.theater.util.OTPUtil;
 import com.github.jimtrung.theater.util.TokenUtil;
+import org.apache.coyote.BadRequestException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,22 +43,23 @@ public class UserService {
     User existingUser = null;
     try { existingUser = userDAO.getByField("username", user.getUsername()); } catch (RuntimeException ignored) {}
     try { existingUser = userDAO.getByField("email", user.getEmail()); } catch (RuntimeException ignored) {}
-    try { existingUser = userDAO.getByField("phoneNumber", user.getPhoneNumber()); } catch (RuntimeException ignored) {}
+    try { existingUser = userDAO.getByField("phone_number", user.getPhoneNumber()); } catch (RuntimeException ignored) {}
 
     if (existingUser != null) throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
 
-    String passwordHash = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-    user.setPassword(passwordHash);
-
     String token = tokenUtil.generateToken();
+    Integer otp = otpUtil.generateOTP();
+    String passwordHash = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+
+    user.setPassword(passwordHash);
     user.setToken(token);
-    user.setOtp(otpUtil.generateOTP());
+    user.setOtp(otp);
     user.setRole(UserRole.USER);
     user.setProvider(Provider.LOCAL);
     user.setVerified(false);
 
     try {
-      emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/auth/verify/" + token);
+      emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/page/verify/" + token);
     } catch (Exception e) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
     }
@@ -70,6 +72,7 @@ public class UserService {
     if (user.getPassword().isEmpty()) throw new IllegalArgumentException("Password is empty");
 
     User existingUser = userDAO.getByField("username", user.getUsername());
+    if (existingUser == null) throw new IllegalArgumentException("User does not exist");
     if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) throw new IllegalArgumentException("Wrong password");
 
     String refreshToken = authTokenUtil.generateRefreshToken(existingUser.getId());

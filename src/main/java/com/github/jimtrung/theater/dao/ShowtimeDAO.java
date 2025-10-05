@@ -18,9 +18,9 @@ public class ShowtimeDAO {
 
   public void insert(Showtime showtime) throws SQLException {
     String sql = """
-            INSERT INTO showtimes (id, movie_id, auditorium_id, start_time, end_time, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO showtimes (id, movie_id, auditorium_id, start_time, end_time, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

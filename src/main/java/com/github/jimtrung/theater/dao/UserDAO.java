@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Repository
 public class UserDAO {
-
   private final DataSource dataSource;
 
   public UserDAO(DataSource dataSource) {
@@ -21,9 +20,9 @@ public class UserDAO {
 
   public void insert(User user) {
     String sql = """
-            INSERT INTO users (username, email, phone_number, password, role, provider, token, otp, verified)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO users (username, email, phone_number, password, role, provider, token, otp, verified)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {

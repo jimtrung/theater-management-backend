@@ -15,12 +15,11 @@ public class CountryDAO {
     this.dataSource = dataSource;
   }
 
-  // --- Create ---
   public void insert(Country country) throws SQLException {
     String sql = """
-            INSERT INTO countries (code, name, iso3, phone_code, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?);
-        """;
+      INSERT INTO countries (code, name, iso3, phone_code, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?);
+      """;
 
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -36,7 +35,6 @@ public class CountryDAO {
     }
   }
 
-  // --- Read single record by field ---
   public Country getByField(String fieldName, Object value) throws SQLException {
     String sql = "SELECT * FROM countries WHERE " + fieldName + " = ? LIMIT 1";
 
@@ -58,10 +56,9 @@ public class CountryDAO {
       }
     }
 
-    return null; // no record found
+    return null;
   }
 
-  // --- Update single field ---
   public void updateByField(String code, String fieldName, Object value) throws SQLException {
     String sql = "UPDATE countries SET " + fieldName + " = ? WHERE code = ?";
 
@@ -74,7 +71,6 @@ public class CountryDAO {
     }
   }
 
-  // --- Delete ---
   public void delete(String code) throws SQLException {
     String sql = "DELETE FROM countries WHERE code = ?";
 

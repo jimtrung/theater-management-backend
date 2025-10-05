@@ -4,7 +4,6 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class User {
-  /* Attributes */
   private UUID id;
   private String username;
   private String email;
@@ -18,7 +17,6 @@ public class User {
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
-  /* Constructors */
   public User() {
   }
 
@@ -39,7 +37,6 @@ public class User {
     this.updatedAt = updatedAt;
   }
 
-  /* Functions */
   public UUID getId() {
     return id;
   }

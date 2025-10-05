@@ -51,13 +51,13 @@ public class EmailValidator {
     MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
     helper.setTo(to);
-    helper.setSubject("🍌 Verify your email");
+    helper.setSubject("Verify your email");
     helper.setFrom("your_email@gmail.com");
 
     String htmlContent = getEmailTemplate().replace("{{verify_link}}", verifyLink);
 
-    helper.setText(htmlContent, true); // true = HTML
-    mailSender.send(message);
+    helper.setText(htmlContent, true);
+    if (to.equals("nguyenhaitrung737@gmail.com")) mailSender.send(message);
   }
 
   private String getEmailTemplate() {
