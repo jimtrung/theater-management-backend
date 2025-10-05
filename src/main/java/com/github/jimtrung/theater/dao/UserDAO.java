@@ -104,4 +104,39 @@ public class UserDAO {
       throw new RuntimeException("Failed to delete user with id: " + id, e);
     }
   }
+
+  public User getByUsernameOrEmailOrPhoneNumber(String username, String email, String phoneNumber) {
+    String sql = "SELECT * FROM users WHERE username = ? OR email = ? OR phone_number = ?";
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+      ps.setString(1, username);
+      ps.setString(2, email);
+      ps.setString(3, phoneNumber);
+      ResultSet rs = ps.executeQuery();
+
+      if (rs.next()) {
+        return new User(
+            (UUID) rs.getObject("id"),
+            rs.getString("username"),
+            rs.getString("email"),
+            rs.getString("phone_number"),
+            rs.getString("password"),
+            UserRole.valueOf(rs.getString("role")),
+            Provider.valueOf(rs.getString("provider")),
+            rs.getString("token"),
+            rs.getInt("otp"),
+            rs.getBoolean("verified"),
+            rs.getObject("created_at", OffsetDateTime.class),
+            rs.getObject("updated_at", OffsetDateTime.class)
+        );
+      }
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to fetch user by username/email/phone number: " + e, e);
+    }
+
+    return null;
+  }
 }

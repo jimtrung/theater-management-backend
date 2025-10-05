@@ -9,7 +9,6 @@ import com.github.jimtrung.theater.util.AuthTokenUtil;
 import com.github.jimtrung.theater.util.EmailValidator;
 import com.github.jimtrung.theater.util.OTPUtil;
 import com.github.jimtrung.theater.util.TokenUtil;
-import org.apache.coyote.BadRequestException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,10 +40,9 @@ public class UserService {
     if (!emailValidator.isValidEmail(user.getEmail())) throw new IllegalArgumentException("Invalid email addresses");
 
     User existingUser = null;
-    try { existingUser = userDAO.getByField("username", user.getUsername()); } catch (RuntimeException ignored) {}
-    try { existingUser = userDAO.getByField("email", user.getEmail()); } catch (RuntimeException ignored) {}
-    try { existingUser = userDAO.getByField("phone_number", user.getPhoneNumber()); } catch (RuntimeException ignored) {}
-
+    try {
+      existingUser = userDAO.getByUsernameOrEmailOrPhoneNumber(user.getUsername(), user.getEmail(), user.getPhoneNumber());
+    } catch (Exception ignored) {}
     if (existingUser != null) throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
 
     String token = tokenUtil.generateToken();
