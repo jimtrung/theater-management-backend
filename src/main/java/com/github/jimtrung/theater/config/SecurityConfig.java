@@ -60,12 +60,11 @@ public class SecurityConfig {
                 "/oauth/**",
                 "/oauth2/authorization/**",
                 "/login/oauth2/**",
-                "error"
+                "/error"
             ).permitAll()
             .anyRequest().authenticated()
         )
         .oauth2Login(oauth2 -> oauth2
-            .loginPage("/oauth2/authorization/github")
             .defaultSuccessUrl("/oauth/login", true)
         )
         .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
