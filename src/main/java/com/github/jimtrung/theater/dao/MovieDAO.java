@@ -1,12 +1,11 @@
 package com.github.jimtrung.theater.dao;
 
+import com.github.jimtrung.theater.exception.system.DatabaseOperationException;
 import com.github.jimtrung.theater.model.Movie;
-import com.github.jimtrung.theater.model.MovieGenre;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,9 +20,9 @@ public class MovieDAO {
 
     public void insert(Movie movie) {
         String sql = """
-                INSERT INTO movies (name, author, description, genres, duration, ageLimit)
-                VALUES (?, ?, ?, ?, ?, ?);
-                """;
+            INSERT INTO movies (name, author, description, genres, duration, ageLimit)
+            VALUES (?, ?, ?, ?, ?, ?);
+            """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -37,7 +36,7 @@ public class MovieDAO {
 
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert a movie", e);
+            throw new DatabaseOperationException("Failed to insert a movie", e);
         }
     }
 
@@ -47,11 +46,11 @@ public class MovieDAO {
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery();) {
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Movie movie = new Movie();
-                movie.setId(rs.getObject("id", java.util.UUID.class));
+                movie.setId(rs.getObject("id", UUID.class));
                 movie.setName(rs.getString("name"));
                 movie.setAuthor(rs.getString("author"));
                 movie.setDescription(rs.getString("description"));
@@ -61,9 +60,8 @@ public class MovieDAO {
 
                 movies.add(movie);
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get all movies", e);
+            throw new DatabaseOperationException("Failed to get all movies", e);
         }
 
         return movies;
@@ -76,10 +74,9 @@ public class MovieDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setObject(1, id);
-
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete movie with id: " + id, e);
+            throw new DatabaseOperationException("Failed to delete movie with id: " + id, e);
         }
     }
 
@@ -87,13 +84,11 @@ public class MovieDAO {
         String sql = "DELETE FROM movies";
 
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.executeUpdate();
-
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete all movies");
+            throw new DatabaseOperationException("Failed to delete all movies", e);
         }
     }
 }
-

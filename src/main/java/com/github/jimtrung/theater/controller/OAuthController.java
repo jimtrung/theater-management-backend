@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/oauth")
 public class OAuthController {
-  private final UserService userService;
+    private final UserService userService;
 
-  public OAuthController(UserService userService) {
-    this.userService = userService;
-  }
+    public OAuthController(UserService userService) {
+        this.userService = userService;
+    }
 
-  @GetMapping("/login")
-  public ResponseEntity<String> logIn(@AuthenticationPrincipal OAuth2User principal) {
-    System.out.println(principal.getAttributes());
+    @GetMapping("/login")
+    public ResponseEntity<String> logIn(@AuthenticationPrincipal OAuth2User principal) {
+        System.out.println(principal.getAttributes());
 
-    return ResponseEntity
-        .status(200)
-        .body("User logged in successfully");
-  }
+        return ResponseEntity
+            .status(200)
+            .body("User logged in successfully");
+    }
 }

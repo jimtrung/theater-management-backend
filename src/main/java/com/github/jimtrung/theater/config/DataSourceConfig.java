@@ -10,9 +10,9 @@ import java.sql.SQLException;
 @Configuration
 public class DataSourceConfig {
 
-  @Bean
-  public boolean initializeDataSource(DataSource dataSource) throws SQLException {
-    try (Connection conn = dataSource.getConnection()) {}
-    return true;
-  }
+    @Bean
+    public boolean initializeDataSource(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {}
+        return true;
+    }
 }
