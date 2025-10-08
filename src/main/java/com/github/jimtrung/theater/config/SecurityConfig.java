@@ -16,60 +16,60 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private final AuthTokenUtil authTokenUtil;
+    private final AuthTokenUtil authTokenUtil;
 
-  public SecurityConfig(AuthTokenUtil authTokenUtil) {
-    this.authTokenUtil = authTokenUtil;
-  }
+    public SecurityConfig(AuthTokenUtil authTokenUtil) {
+        this.authTokenUtil = authTokenUtil;
+    }
 
-  @Bean
-  public JwtAuthFilter jwtAuthFilter() {
-    return new JwtAuthFilter(authTokenUtil);
-  }
+    @Bean
+    public JwtAuthFilter jwtAuthFilter() {
+        return new JwtAuthFilter(authTokenUtil);
+    }
 
-  /**
-   * Chain #1 — Public API endpoints
-   * These should NEVER trigger OAuth redirect
-   */
-  @Bean
-  @Order(1)
-  public SecurityFilterChain authChain(HttpSecurity http) throws Exception {
-    http
-        .securityMatcher("/auth/**", "/user/**")
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-        .formLogin(AbstractHttpConfigurer::disable)
-        .httpBasic(AbstractHttpConfigurer::disable)
-        .logout(AbstractHttpConfigurer::disable);
+    /**
+     * Chain #1 — Public API endpoints
+     * These should NEVER trigger OAuth redirect
+     */
+    @Bean
+    @Order(1)
+    public SecurityFilterChain authChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/auth/**", "/user/**", "/movies", "/movies/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable);
 
-    return http.build();
-  }
+        return http.build();
+    }
 
-  /**
-   * Chain #2 — Protected endpoints + OAuth
-   */
-  @Bean
-  @Order(2)
-  public SecurityFilterChain mainChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/oauth/**",
-                "/oauth2/authorization/**",
-                "/login/oauth2/**",
-                "error"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage("/oauth2/authorization/github")
-            .defaultSuccessUrl("/oauth/login", true)
-        )
-        .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+    /**
+     * Chain #2 — Protected endpoints + OAuth
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain mainChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/oauth/**",
+                                "/oauth2/authorization/**",
+                                "/login/oauth2/**",
+                                "error"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/github")
+                        .defaultSuccessUrl("/oauth/login", true)
+                )
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-  }
+        return http.build();
+    }
 }
