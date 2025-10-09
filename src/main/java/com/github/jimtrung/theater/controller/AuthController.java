@@ -41,7 +41,7 @@ public class AuthController {
 
         TokenPair tokenPair = userService.signIn(user);
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(tokenPair);
     }
 

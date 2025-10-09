@@ -19,7 +19,7 @@ public class UserDAO {
         this.dataSource = dataSource;
     }
 
-    public void insert(User user) throws SQLException {
+    public void insert(User user) {
         String sql = """
             INSERT INTO users (username, email, phone_number, password, role, provider, token, otp, verified)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -44,7 +44,7 @@ public class UserDAO {
         }
     }
 
-    public User getByField(String fieldName, Object fieldValue) throws SQLException {
+    public User getByField(String fieldName, Object fieldValue) {
         String sql = "SELECT * FROM users WHERE " + fieldName + " = ? LIMIT 1";
 
         try (Connection conn = dataSource.getConnection();
@@ -77,7 +77,7 @@ public class UserDAO {
         return null;
     }
 
-    public void updateByField(UUID id, String fieldName, Object value) throws SQLException {
+    public void updateByField(UUID id, String fieldName, Object value) {
         String sql = "UPDATE users SET " + fieldName + " = ? WHERE id = ?";
 
         try (Connection conn = dataSource.getConnection();
@@ -106,7 +106,7 @@ public class UserDAO {
         }
     }
 
-    public User getByUsernameOrEmailOrPhoneNumber(String username, String email, String phoneNumber) throws SQLException {
+    public User getByUsernameOrEmailOrPhoneNumber(String username, String email, String phoneNumber) {
         String sql = """
             SELECT id, username, email, phone_number, password, role, provider, otp, token, verified, created_at, updated_at
             FROM users

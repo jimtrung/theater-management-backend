@@ -11,8 +11,9 @@ import java.sql.SQLException;
 public class DataSourceConfig {
 
     @Bean
-    public boolean initializeDataSource(DataSource dataSource) throws SQLException {
+    public boolean initializeDataSource(DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {}
+        catch (SQLException e) {}
         return true;
     }
 }
