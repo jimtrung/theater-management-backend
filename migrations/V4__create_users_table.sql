@@ -1,9 +1,9 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    username TEXT NOT NULL UNIQUE,
+    username TEXT UNIQUE,
     email TEXT NOT NULL UNIQUE,
-    phone_number TEXT NOT NULL UNIQUE,
+    phone_number TEXT UNIQUE,
     password TEXT,
 
     role role_type NOT NULL,

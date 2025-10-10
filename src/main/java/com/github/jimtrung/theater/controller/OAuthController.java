@@ -1,5 +1,6 @@
 package com.github.jimtrung.theater.controller;
 
+import com.github.jimtrung.theater.dto.TokenPair;
 import com.github.jimtrung.theater.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,12 +18,12 @@ public class OAuthController {
         this.userService = userService;
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> logIn(@AuthenticationPrincipal OAuth2User principal) {
-        System.out.println(principal.getAttributes());
+    @GetMapping("/user")
+    public ResponseEntity<TokenPair> user(@AuthenticationPrincipal OAuth2User principal) {
+        TokenPair tokenPair = userService.logInOrSignUpOAuth(principal);
 
         return ResponseEntity
             .status(200)
-            .body("User logged in successfully");
+            .body(tokenPair);
     }
 }
