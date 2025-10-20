@@ -5,6 +5,7 @@ import com.github.jimtrung.theater.dto.TokenPair;
 import com.github.jimtrung.theater.exception.system.DatabaseOperationException;
 import com.github.jimtrung.theater.exception.user.InvalidCredentialsException;
 import com.github.jimtrung.theater.exception.user.InvalidUserDataException;
+import com.github.jimtrung.theater.exception.user.MismatchedAuthProviderException;
 import com.github.jimtrung.theater.exception.user.UserAlreadyExistsException;
 import com.github.jimtrung.theater.model.Provider;
 import com.github.jimtrung.theater.model.User;
@@ -15,6 +16,7 @@ import com.github.jimtrung.theater.util.OTPUtil;
 import com.github.jimtrung.theater.util.TokenUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -99,5 +101,31 @@ public class UserService {
 
         UUID userId = authTokenUtil.parseToken(refreshToken);
         return authTokenUtil.generateAccessToken(userId);
+    }
+
+    public TokenPair logInOrSignUpOAuth(OAuth2User user) {
+        User existingUser = null;
+        existingUser = userDAO.getByField("email", user.getAttributes().get("email"));
+
+        if (existingUser == null) {
+            User newUser = new User();
+            newUser.setEmail((String) user.getAttributes().get("email"));
+            newUser.setRole(UserRole.USER);
+            newUser.setProvider(Provider.GOOGLE);
+            newUser.setVerified(true);
+
+            userDAO.insert(newUser);
+        }
+
+        if (existingUser != null && !existingUser.getProvider().equals(Provider.GOOGLE)) {
+            throw new MismatchedAuthProviderException("Wrong provider");
+        }
+
+        existingUser = userDAO.getByField("email",  user.getAttributes().get("email"));
+
+        String refreshToken = authTokenUtil.generateRefreshToken(existingUser.getId());
+        String accessToken = authTokenUtil.generateAccessToken(existingUser.getId());
+
+        return new TokenPair(accessToken, refreshToken);
     }
 }

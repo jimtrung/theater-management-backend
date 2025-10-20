@@ -39,6 +39,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + ex.getMessage(), req);
     }
 
+    @ExceptionHandler(MismatchedAuthProviderException.class)
+    public ResponseEntity<ErrorResponse> handleMismatchedAuthProviderException(MismatchedAuthProviderException ex, WebRequest req) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), req);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex, WebRequest req) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage(), req);

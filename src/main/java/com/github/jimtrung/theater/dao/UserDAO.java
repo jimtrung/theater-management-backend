@@ -35,7 +35,7 @@ public class UserDAO {
             ps.setObject(5, user.getRole(), Types.OTHER);
             ps.setObject(6, user.getProvider(), Types.OTHER);
             ps.setString(7, user.getToken());
-            ps.setInt(8, user.getOtp());
+            ps.setObject(8, user.getOtp());
             ps.setBoolean(9, user.getVerified());
             ps.executeUpdate();
 
@@ -55,18 +55,18 @@ public class UserDAO {
 
             if (rs.next()) {
                 return new User(
-                        (UUID) rs.getObject("id"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("password"),
-                        UserRole.valueOf(rs.getString("role")),
-                        Provider.valueOf(rs.getString("provider")),
-                        rs.getString("token"),
-                        rs.getInt("otp"),
-                        rs.getBoolean("verified"),
-                        rs.getObject("created_at", OffsetDateTime.class),
-                        rs.getObject("updated_at", OffsetDateTime.class)
+                    (UUID) rs.getObject("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("phone_number"),
+                    rs.getString("password"),
+                    UserRole.valueOf(rs.getString("role")),
+                    Provider.valueOf(rs.getString("provider")),
+                    rs.getString("token"),
+                    rs.getInt("otp"),
+                    rs.getBoolean("verified"),
+                    rs.getObject("created_at", OffsetDateTime.class),
+                    rs.getObject("updated_at", OffsetDateTime.class)
                 );
             }
 
