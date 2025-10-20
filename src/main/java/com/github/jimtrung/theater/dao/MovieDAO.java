@@ -67,6 +67,32 @@ public class MovieDAO {
         return movies;
     }
 
+    public Movie getMovieById(UUID id) {
+        String sql = "SELECT id, name, author, description, genres, duration, ageLimit FROM movies WHERE id = ?";
+        Movie movie = new Movie();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);) {
+
+
+            ps.setObject(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                movie.setId(rs.getObject("id", UUID.class));
+                movie.setName(rs.getString("name"));
+                movie.setAuthor(rs.getString("author"));
+                movie.setDescription(rs.getString("description"));
+                movie.setGenres(rs.getString("genres"));
+                movie.setDuration(rs.getInt("duration"));
+                movie.setAgeLimit(rs.getInt("ageLimit"));
+            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to get all movies", e);
+        }
+
+        return movie;
+    }
+
     public void delete(UUID id) {
         String sql = "DELETE FROM movies WHERE id = ?;";
 
@@ -89,6 +115,35 @@ public class MovieDAO {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Failed to delete all movies", e);
+        }
+    }
+
+    public void updateMovieById(UUID id, Movie movie) {
+        String sql = """
+        UPDATE movies
+        SET name = ?, author = ?, description = ?, genres = ?, duration = ?, ageLimit = ?
+        WHERE id = ?;
+        """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, movie.getName());
+            ps.setString(2, movie.getAuthor());
+            ps.setString(3, movie.getDescription());
+            ps.setString(4, movie.getGenres());
+            ps.setInt(5, movie.getDuration());
+            ps.setInt(6, movie.getAgeLimit());
+            ps.setObject(7, id);
+
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new DatabaseOperationException("No movie found with id: " + id, null);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException("Failed to update movie with id: " + id, e);
         }
     }
 }

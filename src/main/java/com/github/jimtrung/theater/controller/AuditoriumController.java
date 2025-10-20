@@ -1,9 +1,9 @@
 package com.github.jimtrung.theater.controller;
 
+import com.github.jimtrung.theater.dao.AuditoriumDAO;
 import com.github.jimtrung.theater.dao.MovieDAO;
+import com.github.jimtrung.theater.model.Auditorium;
 import com.github.jimtrung.theater.model.Movie;
-import com.github.jimtrung.theater.service.MovieService;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,37 +12,27 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/movies")
-public class MovieController {
+@RequestMapping("/auditoriums")
+public class AuditoriumController {
+    private final AuditoriumDAO auditoriumDAO;
 
-    private final MovieDAO movieDAO;
-
-    public MovieController(MovieDAO movieDAO) {
-        this.movieDAO = movieDAO;
+    public AuditoriumController(AuditoriumDAO auditoriumDAO) {
+        this.auditoriumDAO = auditoriumDAO;
     }
 
     @GetMapping
-    public ResponseEntity<List<Movie>> getAllMovies() {
-        List<Movie> movies = movieDAO.getAllMovies();
-        if (movies.isEmpty()) {
+    public ResponseEntity<List<Auditorium>> getAllAuditoriums() {
+        List<Auditorium> auditoriums = auditoriumDAO.getAllAuditoriums();
+        if (auditoriums.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(movies);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable UUID id) {
-        Movie movie = movieDAO.getMovieById(id);
-        if (movie.getId() == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(movie);
+        return ResponseEntity.ok(auditoriums);
     }
 
     @PostMapping
-    public ResponseEntity<String> insertMovie(@RequestBody Movie movie) {
+    public ResponseEntity<String> insertAuditorium(@RequestBody Auditorium auditorium) {
         try {
-            movieDAO.insert(movie);
+            auditoriumDAO.insert(auditorium);
             return ResponseEntity.status(HttpStatus.CREATED).body("Movie insert successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert movie: " + e.getMessage());
@@ -50,9 +40,9 @@ public class MovieController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllMovies() {
+    public ResponseEntity<String> deleteAllAuditoriums() {
         try {
-            movieDAO.deleteAllMovies();
+            auditoriumDAO.deleteAllAuditoriums();
             return ResponseEntity.ok("All movies have been deleted successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all movies: " + e.getMessage());
@@ -60,19 +50,28 @@ public class MovieController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMovieById(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteAuditoriumById(@PathVariable UUID id) {
         try {
-            movieDAO.delete(id);
+            auditoriumDAO.delete(id);
             return ResponseEntity.ok("Movie have been deleted successfully with id: " + id);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all movies: " + e.getMessage());
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Auditorium> getAuditoriumById(@PathVariable UUID id) {
+        Auditorium auditorium = auditoriumDAO.getAuditoriumById(id);
+        if (auditorium.getId() == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(auditorium);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateMovieById(@PathVariable UUID id, @RequestBody Movie movie) {
+    public ResponseEntity<String> updateAuditoriumById(@PathVariable UUID id, @RequestBody Auditorium auditorium) {
         try {
-            movieDAO.updateMovieById(id, movie);
+            auditoriumDAO.updateAuditoriumById(id, auditorium);
             return ResponseEntity.ok("Movie updated successfully with id: " + id);
         } catch (Exception e) {
             return ResponseEntity
@@ -80,5 +79,4 @@ public class MovieController {
                     .body("Failed to update movie: " + e.getMessage());
         }
     }
-
 }

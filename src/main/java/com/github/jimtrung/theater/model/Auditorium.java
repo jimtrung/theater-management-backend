@@ -4,47 +4,76 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class Auditorium {
-  private UUID id;
-  private Integer capacity;
-  private OffsetDateTime createdAt;
-  private OffsetDateTime updatedAt;
+    private UUID id;
+    private String name;
+    private String type;
+    private Integer capacity;
+    private String note;
+//    private OffsetDateTime createdAt;
+//    private OffsetDateTime updatedAt;
 
-  public Auditorium(UUID id, Integer capacity, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
-    this.id = id;
-    this.capacity = capacity;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+    public Auditorium() {};
+    public Auditorium(UUID id, String name, String type,Integer capacity, String note) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.capacity = capacity;
+        this.note = note;
+    }
 
-  public UUID getId() {
-    return id;
-  }
+    public String getNote() {
+        return note;
+    }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
+    public void setNote(String note) {
+        this.note = note;
+    }
 
-  public Integer getCapacity() {
-    return capacity;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setCapacity(Integer capacity) {
-    this.capacity = capacity;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setCreatedAt(OffsetDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public OffsetDateTime getUpdatedAt() {
-    return updatedAt;
-  }
+    public UUID getId() {
+        return id;
+    }
 
-  public void setUpdatedAt(OffsetDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+//    public OffsetDateTime getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public void setCreatedAt(OffsetDateTime createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public OffsetDateTime getUpdatedAt() {
+//        return updatedAt;
+//    }
+//
+//    public void setUpdatedAt(OffsetDateTime updatedAt) {
+//        this.updatedAt = updatedAt;
+//    }
 }
