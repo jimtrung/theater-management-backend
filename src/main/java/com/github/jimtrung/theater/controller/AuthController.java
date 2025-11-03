@@ -1,5 +1,6 @@
 package com.github.jimtrung.theater.controller;
 
+import com.github.jimtrung.theater.dto.ForgotPasswordRequest;
 import com.github.jimtrung.theater.dto.RefreshRequest;
 import com.github.jimtrung.theater.dto.SignUpRequest;
 import com.github.jimtrung.theater.dto.TokenPair;
@@ -58,5 +59,14 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(newAccessToken);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        // TODO: Create logic
+
+        return ResponseEntity
+            .status(200)
+            .body("Reset password email sent successfully");
     }
 }

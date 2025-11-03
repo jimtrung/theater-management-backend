@@ -2,8 +2,7 @@ package com.github.jimtrung.theater.controller;
 
 import com.github.jimtrung.theater.dao.MovieDAO;
 import com.github.jimtrung.theater.model.Movie;
-import com.github.jimtrung.theater.service.MovieService;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import com.github.jimtrung.theater.exception.system.DatabaseOperationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +20,7 @@ public class MovieController {
         this.movieDAO = movieDAO;
     }
 
+    // --- GET all ---
     @GetMapping
     public ResponseEntity<List<Movie>> getAllMovies() {
         List<Movie> movies = movieDAO.getAllMovies();
@@ -30,25 +30,31 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // --- GET by ID ---
     @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable UUID id) {
-        Movie movie = movieDAO.getMovieById(id);
-        if (movie.getId() == null) {
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<?> getMovieById(@PathVariable UUID id) {
+        try {
+            Movie movie = movieDAO.getMovieById(id);
+            return ResponseEntity.ok(movie);
+        } catch (DatabaseOperationException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found with id: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching movie: " + e.getMessage());
         }
-        return ResponseEntity.ok(movie);
     }
 
+    // --- POST (Insert) ---
     @PostMapping
     public ResponseEntity<String> insertMovie(@RequestBody Movie movie) {
         try {
             movieDAO.insert(movie);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Movie insert successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Movie inserted successfully 🎬");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert movie: " + e.getMessage());
         }
     }
 
+    // --- DELETE ALL ---
     @DeleteMapping
     public ResponseEntity<String> deleteAllMovies() {
         try {
@@ -59,16 +65,18 @@ public class MovieController {
         }
     }
 
+    // --- DELETE by ID ---
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMovieById(@PathVariable UUID id) {
         try {
             movieDAO.delete(id);
-            return ResponseEntity.ok("Movie have been deleted successfully with id: " + id);
+            return ResponseEntity.ok("Movie deleted successfully with id: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all movies: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete movie: " + e.getMessage());
         }
     }
 
+    // --- UPDATE by ID ---
     @PutMapping("/{id}")
     public ResponseEntity<String> updateMovieById(@PathVariable UUID id, @RequestBody Movie movie) {
         try {
@@ -80,5 +88,4 @@ public class MovieController {
                     .body("Failed to update movie: " + e.getMessage());
         }
     }
-
 }

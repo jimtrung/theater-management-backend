@@ -3,18 +3,23 @@ package com.github.jimtrung.theater.model;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public class MovieActors {
+public class MovieActor {
   private UUID movieId;
   private UUID actorId;
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
-  public MovieActors(UUID movieId, UUID actorId, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+  public MovieActor(UUID movieId, UUID actorId, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
     this.movieId = movieId;
     this.actorId = actorId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
+
+    public MovieActor(UUID movieId, UUID actorId) {
+        this.movieId = movieId;
+        this.actorId = actorId;
+    }
 
   public UUID getMovieId() {
     return movieId;

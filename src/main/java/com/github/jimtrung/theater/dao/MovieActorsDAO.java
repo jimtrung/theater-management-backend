@@ -1,12 +1,11 @@
 package com.github.jimtrung.theater.dao;
 
 import com.github.jimtrung.theater.exception.system.DatabaseOperationException;
-import com.github.jimtrung.theater.model.MovieActors;
+import com.github.jimtrung.theater.model.MovieActor;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Repository
@@ -17,10 +16,10 @@ public class MovieActorsDAO {
         this.dataSource = dataSource;
     }
 
-    public void insert(MovieActors ma) {
+    public void insert(MovieActor ma) {
         String sql = """
-            INSERT INTO movie_actors (movie_id, actor_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?);
+            INSERT INTO movie_actors (movie_id, actor_id)
+            VALUES (?, ?);
             """;
 
         try (Connection conn = dataSource.getConnection();
@@ -28,8 +27,6 @@ public class MovieActorsDAO {
 
             ps.setObject(1, ma.getMovieId());
             ps.setObject(2, ma.getActorId());
-            ps.setObject(3, ma.getCreatedAt());
-            ps.setObject(4, ma.getUpdatedAt());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -37,8 +34,8 @@ public class MovieActorsDAO {
         }
     }
 
-    public MovieActors getByField(String fieldName, Object value) {
-        String sql = "SELECT movie_id, actor_id, created_at, updated_at FROM movie_actors WHERE " + fieldName + " = ? LIMIT 1;";
+    public MovieActor getByField(String fieldName, Object value) {
+        String sql = "SELECT movie_id, actor_id, FROM movie_actors WHERE " + fieldName + " = ? LIMIT 1;";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,11 +44,9 @@ public class MovieActorsDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new MovieActors(
-                        (UUID) rs.getObject("movie_id"),
-                        (UUID) rs.getObject("actor_id"),
-                        rs.getObject("created_at", OffsetDateTime.class),
-                        rs.getObject("updated_at", OffsetDateTime.class)
+                return new MovieActor(
+                    (UUID) rs.getObject("movie_id"),
+                    (UUID) rs.getObject("actor_id")
                 );
             }
         } catch (SQLException e) {

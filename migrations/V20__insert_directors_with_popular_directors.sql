@@ -213,7 +213,7 @@ FROM (VALUES
     ('Guy', 'Ritchie', '1968-09-10'::date, 'MALE', 'GB'),
     ('Gina', 'Prince-Bythewood', '1970-06-10'::date, 'FEMALE', 'US'),
     ('Shari', 'Springer Berman', '1964-01-01'::date, 'FEMALE', 'US'),
-    ('Robert', 'Pulcini', '1964-01-01'::date, 'MALE', 'US')
+    ('Robert', 'Pulcini', '1964-01-01'::date, 'MALE', 'US'),
     ('Tran', 'Anh Hung', '1962-12-23'::date, 'MALE', 'VN'),
     ('Nguyen', 'Quang Dung', '1979-09-10'::date, 'MALE', 'VN'),
     ('Diep', 'Bach', '1929-01-01'::date, 'FEMALE', 'VN'),

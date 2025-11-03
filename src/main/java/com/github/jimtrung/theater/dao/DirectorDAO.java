@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -73,6 +75,43 @@ public class DirectorDAO {
         }
 
         return null;
+    }
+
+    public List<Director> getAll() {
+        String sql = """
+            SELECT id, first_name, last_name, dob, age, gender, country_code, created_at, updated_at
+            FROM directors
+            ORDER BY created_at DESC;
+            """;
+
+        List<Director> directors = new ArrayList<>();
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Director director = new Director(
+                        (UUID) rs.getObject("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getDate("dob"),
+                        rs.getInt("age"),
+                        Gender.valueOf(rs.getString("gender")),
+                        rs.getString("country_code"),
+                        rs.getObject("created_at", OffsetDateTime.class),
+                        rs.getObject("updated_at", OffsetDateTime.class)
+                );
+                directors.add(director);
+            }
+
+            System.out.println("[DEBUG] - getAllDirectors - Found " + directors.size() + " directors in DB");
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to fetch all directors", e);
+        }
+
+        return directors;
     }
 
     public void updateByField(UUID id, String fieldName, Object fieldValue) {

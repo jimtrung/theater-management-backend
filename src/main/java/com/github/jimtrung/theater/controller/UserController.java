@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<User> getUser(HttpServletRequest request) {
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
         UUID userId = (UUID) request.getAttribute("userId");
         return ResponseEntity
             .status(HttpStatus.OK)

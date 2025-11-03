@@ -128,4 +128,10 @@ public class UserService {
 
         return new TokenPair(accessToken, refreshToken);
     }
+
+    public boolean isAdmin(UUID userId) {
+        User existingUser = userDAO.getByField("id", userId);
+        if (existingUser == null) throw new InvalidCredentialsException("User does not exist");
+        return existingUser.getRole() == UserRole.ADMINISTRATOR;
+    }
 }

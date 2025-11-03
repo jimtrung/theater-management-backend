@@ -6,9 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 @Repository
 public class MovieDAO {
@@ -18,30 +17,67 @@ public class MovieDAO {
         this.dataSource = dataSource;
     }
 
+    // --- INSERT ---
     public void insert(Movie movie) {
         String sql = """
-            INSERT INTO movies (name, author, description, genres, duration, ageLimit)
-            VALUES (?, ?, ?, ?, ?, ?);
+            INSERT INTO movies (id, name, description, director_id, genres, premiere, duration, language, rated)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
             """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setString(1, movie.getName());
-            ps.setString(2, movie.getAuthor());
+            // 1. id
+            ps.setObject(1, movie.getId());
+
+            // 2. name
+            ps.setString(2, movie.getName());
+
+            // 3. description
             ps.setString(3, movie.getDescription());
-            ps.setString(4, movie.getGenres());
-            ps.setInt(5, movie.getDuration());
-            ps.setInt(6, movie.getAgeLimit());
+
+            // 4. director_id
+            ps.setObject(4, movie.getDirectorId());
+
+            // 5. genres → convert List<String> to String[]
+            Array genreArray = connection.createArrayOf("movie_genre", movie.getGenres().toArray(String[]::new));
+            ps.setArray(5, genreArray);
+
+            // 6. premiere
+            if (movie.getPremiere() != null)
+                ps.setObject(6, Timestamp.from(movie.getPremiere().toInstant()));
+            else
+                ps.setNull(6, Types.TIMESTAMP_WITH_TIMEZONE);
+
+            // 7. duration
+            if (movie.getDuration() != null)
+                ps.setInt(7, movie.getDuration());
+            else
+                ps.setNull(7, Types.INTEGER);
+
+            // 8. language
+            ps.setString(8, movie.getLanguage());
+
+            // 9. rated
+            if (movie.getRated() != null)
+                ps.setInt(9, movie.getRated());
+            else
+                ps.setNull(9, Types.INTEGER);
 
             ps.executeUpdate();
+
         } catch (SQLException e) {
-            throw new DatabaseOperationException("Failed to insert a movie", e);
+            throw new DatabaseOperationException("Failed to insert movie", e);
         }
     }
 
+    // --- GET ALL ---
     public List<Movie> getAllMovies() {
-        String sql = "SELECT id, name, author, description, genres, duration, ageLimit FROM movies";
+        String sql = """
+                SELECT id, name, description, director_id, genres, premiere, duration, language, rated,
+                       created_at, updated_at
+                FROM movies
+                """;
         List<Movie> movies = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -49,15 +85,7 @@ public class MovieDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Movie movie = new Movie();
-                movie.setId(rs.getObject("id", UUID.class));
-                movie.setName(rs.getString("name"));
-                movie.setAuthor(rs.getString("author"));
-                movie.setDescription(rs.getString("description"));
-                movie.setGenres(rs.getString("genres"));
-                movie.setDuration(rs.getInt("duration"));
-                movie.setAgeLimit(rs.getInt("ageLimit"));
-
+                Movie movie = mapResultSetToMovie(rs);
                 movies.add(movie);
             }
         } catch (SQLException e) {
@@ -67,83 +95,117 @@ public class MovieDAO {
         return movies;
     }
 
+    // --- GET BY ID ---
     public Movie getMovieById(UUID id) {
-        String sql = "SELECT id, name, author, description, genres, duration, ageLimit FROM movies WHERE id = ?";
-        Movie movie = new Movie();
+        String sql = """
+                SELECT id, name, description, director_id, genres, premiere, duration, language, rated,
+                       created_at, updated_at
+                FROM movies WHERE id = ?
+                """;
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql);) {
-
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setObject(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                movie.setId(rs.getObject("id", UUID.class));
-                movie.setName(rs.getString("name"));
-                movie.setAuthor(rs.getString("author"));
-                movie.setDescription(rs.getString("description"));
-                movie.setGenres(rs.getString("genres"));
-                movie.setDuration(rs.getInt("duration"));
-                movie.setAgeLimit(rs.getInt("ageLimit"));
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Failed to get all movies", e);
-        }
 
-        return movie;
+            if (rs.next()) {
+                return mapResultSetToMovie(rs);
+            } else {
+                throw new DatabaseOperationException("Movie not found with id: " + id, null);
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to get movie by id", e);
+        }
     }
 
+    // --- DELETE ---
     public void delete(UUID id) {
-        String sql = "DELETE FROM movies WHERE id = ?;";
+        String sql = "DELETE FROM movies WHERE id = ?";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setObject(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseOperationException("Failed to delete movie with id: " + id, e);
+            throw new DatabaseOperationException("Failed to delete movie", e);
         }
     }
 
     public void deleteAllMovies() {
         String sql = "DELETE FROM movies";
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Failed to delete all movies", e);
         }
     }
 
+    // --- UPDATE ---
     public void updateMovieById(UUID id, Movie movie) {
         String sql = """
-        UPDATE movies
-        SET name = ?, author = ?, description = ?, genres = ?, duration = ?, ageLimit = ?
-        WHERE id = ?;
-        """;
+                UPDATE movies
+                SET name = ?, description = ?, director_id = ?, genres = ?, premiere = ?, duration = ?, language = ?, rated = ?
+                WHERE id = ?
+                """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, movie.getName());
-            ps.setString(2, movie.getAuthor());
-            ps.setString(3, movie.getDescription());
-            ps.setString(4, movie.getGenres());
-            ps.setInt(5, movie.getDuration());
-            ps.setInt(6, movie.getAgeLimit());
-            ps.setObject(7, id);
+            ps.setString(2, movie.getDescription());
+            ps.setObject(3, movie.getDirectorId());
 
-            int rowsUpdated = ps.executeUpdate();
-            if (rowsUpdated == 0) {
-                throw new DatabaseOperationException("No movie found with id: " + id, null);
-            }
+            Array genreArray = connection.createArrayOf("movie_genre", movie.getGenres().toArray());
+            ps.setArray(4, genreArray);
 
+            if (movie.getPremiere() != null)
+                ps.setObject(5, Timestamp.from(movie.getPremiere().toInstant()));
+            else
+                ps.setNull(5, Types.TIMESTAMP_WITH_TIMEZONE);
+
+            ps.setObject(6, movie.getDuration());
+            ps.setString(7, movie.getLanguage());
+            ps.setObject(8, movie.getRated());
+            ps.setObject(9, id);
+
+            ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseOperationException("Failed to update movie with id: " + id, e);
+            throw new DatabaseOperationException("Failed to update movie", e);
         }
+    }
+
+    // --- Helper to map result ---
+    private Movie mapResultSetToMovie(ResultSet rs) throws SQLException {
+        Movie movie = new Movie();
+        movie.setId(rs.getObject("id", UUID.class));
+        movie.setName(rs.getString("name"));
+        movie.setDescription(rs.getString("description"));
+        movie.setDirectorId(rs.getObject("director_id", UUID.class));
+
+        Array genresArray = rs.getArray("genres");
+        if (genresArray != null) {
+            movie.setGenres(Arrays.asList((String[]) genresArray.getArray()));
+        }
+
+        Timestamp premiereTs = rs.getTimestamp("premiere");
+        if (premiereTs != null)
+            movie.setPremiere(premiereTs.toInstant().atOffset(OffsetDateTime.now().getOffset()));
+
+        movie.setDuration(rs.getInt("duration"));
+        movie.setLanguage(rs.getString("language"));
+        movie.setRated(rs.getInt("rated"));
+
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        if (createdAt != null)
+            movie.setCreatedAt(createdAt.toInstant().atOffset(OffsetDateTime.now().getOffset()));
+        if (updatedAt != null)
+            movie.setUpdatedAt(updatedAt.toInstant().atOffset(OffsetDateTime.now().getOffset()));
+
+        return movie;
     }
 }
