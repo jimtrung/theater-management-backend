@@ -67,6 +67,9 @@ public class MovieDAO {
             ps.executeUpdate();
 
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to insert movie");
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to insert movie", e);
         }
     }
@@ -89,6 +92,9 @@ public class MovieDAO {
                 movies.add(movie);
             }
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to get all movies");
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to get all movies", e);
         }
 
@@ -116,6 +122,9 @@ public class MovieDAO {
             }
 
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to get movie by id: " + id);
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to get movie by id", e);
         }
     }
@@ -130,6 +139,9 @@ public class MovieDAO {
             ps.setObject(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to delete movie with id: " + id);
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to delete movie", e);
         }
     }
@@ -140,6 +152,9 @@ public class MovieDAO {
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.executeUpdate();
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to delete all movies");
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to delete all movies", e);
         }
     }
@@ -174,6 +189,9 @@ public class MovieDAO {
 
             ps.executeUpdate();
         } catch (SQLException e) {
+            System.err.println("ERROR: Failed to update movie with id: " + id);
+            System.err.println("Cause: " + e.getMessage());
+            e.printStackTrace();
             throw new DatabaseOperationException("Failed to update movie", e);
         }
     }

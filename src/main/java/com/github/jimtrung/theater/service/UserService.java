@@ -61,8 +61,8 @@ public class UserService {
         user.setPassword(passwordHash);
         user.setToken(token);
         user.setOtp(otp);
-        user.setRole(UserRole.USER);
-        user.setProvider(Provider.LOCAL);
+        user.setRole(UserRole.user);
+        user.setProvider(Provider.local);
         user.setVerified(false);
 
         try {
@@ -103,35 +103,9 @@ public class UserService {
         return authTokenUtil.generateAccessToken(userId);
     }
 
-    public TokenPair logInOrSignUpOAuth(OAuth2User user) {
-        User existingUser = null;
-        existingUser = userDAO.getByField("email", user.getAttributes().get("email"));
-
-        if (existingUser == null) {
-            User newUser = new User();
-            newUser.setEmail((String) user.getAttributes().get("email"));
-            newUser.setRole(UserRole.USER);
-            newUser.setProvider(Provider.GOOGLE);
-            newUser.setVerified(true);
-
-            userDAO.insert(newUser);
-        }
-
-        if (existingUser != null && !existingUser.getProvider().equals(Provider.GOOGLE)) {
-            throw new MismatchedAuthProviderException("Wrong provider");
-        }
-
-        existingUser = userDAO.getByField("email",  user.getAttributes().get("email"));
-
-        String refreshToken = authTokenUtil.generateRefreshToken(existingUser.getId());
-        String accessToken = authTokenUtil.generateAccessToken(existingUser.getId());
-
-        return new TokenPair(accessToken, refreshToken);
-    }
-
     public boolean isAdmin(UUID userId) {
         User existingUser = userDAO.getByField("id", userId);
         if (existingUser == null) throw new InvalidCredentialsException("User does not exist");
-        return existingUser.getRole() == UserRole.ADMINISTRATOR;
+        return existingUser.getRole() == UserRole.administrator;
     }
 }
