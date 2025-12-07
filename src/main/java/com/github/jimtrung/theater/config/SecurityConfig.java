@@ -44,28 +44,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    /**
-     * Chain #2 — Protected endpoints + OAuth
-     */
-    @Bean
-    @Order(2)
-    public SecurityFilterChain mainChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/oauth/**",
-                    "/oauth2/authorization/**",
-                    "/login/oauth2/**",
-                    "/error"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/oauth/user", true)
-            )
-            .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
 }

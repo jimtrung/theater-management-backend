@@ -33,3 +33,11 @@ build/
 .vscode/
 application.properties
 .idea/
+
+### Sensitive / Configuration ###
+flyway.conf
+.env
+
+### Runtime / Dynamic ###
+uploads/
+*.log

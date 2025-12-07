@@ -1,17 +1,30 @@
 package com.github.jimtrung.theater.model;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "tickets")
 public class Ticket {
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
+  
+  @Column(name = "user_id")
   private UUID userId;
+  
+  @Column(name = "showtime_id")
   private UUID showtimeId;
+  
+  @Column(name = "seat_id")
   private UUID seatId;
+  
   private Integer price;
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
+  public Ticket() {}
   public Ticket(UUID id, UUID userId, UUID showtimeId, UUID seatId, Integer price, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
     this.id = id;
     this.userId = userId;
@@ -22,59 +35,24 @@ public class Ticket {
     this.updatedAt = updatedAt;
   }
 
-  public UUID getId() {
-    return id;
-  }
+  public UUID getId() { return id; }
+  public void setId(UUID id) { this.id = id; }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
+  public UUID getUserId() { return userId; }
+  public void setUserId(UUID userId) { this.userId = userId; }
 
-  public UUID getUserId() {
-    return userId;
-  }
+  public UUID getShowtimeId() { return showtimeId; }
+  public void setShowtimeId(UUID showtimeId) { this.showtimeId = showtimeId; }
 
-  public void setUserId(UUID userId) {
-    this.userId = userId;
-  }
+  public UUID getSeatId() { return seatId; }
+  public void setSeatId(UUID seatId) { this.seatId = seatId; }
 
-  public UUID getShowtimeId() {
-    return showtimeId;
-  }
+  public Integer getPrice() { return price; }
+  public void setPrice(Integer price) { this.price = price; }
 
-  public void setShowtimeId(UUID showtimeId) {
-    this.showtimeId = showtimeId;
-  }
+  public OffsetDateTime getCreatedAt() { return createdAt; }
+  public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
 
-  public UUID getSeatId() {
-    return seatId;
-  }
-
-  public void setSeatId(UUID seatId) {
-    this.seatId = seatId;
-  }
-
-  public Integer getPrice() {
-    return price;
-  }
-
-  public void setPrice(Integer price) {
-    this.price = price;
-  }
-
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(OffsetDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public OffsetDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(OffsetDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+  public OffsetDateTime getUpdatedAt() { return updatedAt; }
+  public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

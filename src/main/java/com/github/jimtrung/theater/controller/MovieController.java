@@ -1,8 +1,7 @@
 package com.github.jimtrung.theater.controller;
 
-import com.github.jimtrung.theater.dao.MovieDAO;
 import com.github.jimtrung.theater.model.Movie;
-import com.github.jimtrung.theater.exception.system.DatabaseOperationException;
+import com.github.jimtrung.theater.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +13,16 @@ import java.util.UUID;
 @RequestMapping("/movies")
 public class MovieController {
 
-    private final MovieDAO movieDAO;
+    private final MovieService movieService;
 
-    public MovieController(MovieDAO movieDAO) {
-        this.movieDAO = movieDAO;
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
 
     // --- GET all ---
     @GetMapping
     public ResponseEntity<List<Movie>> getAllMovies() {
-        List<Movie> movies = movieDAO.getAllMovies();
+        List<Movie> movies = movieService.getAllMovies();
         if (movies.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -34,12 +33,10 @@ public class MovieController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getMovieById(@PathVariable UUID id) {
         try {
-            Movie movie = movieDAO.getMovieById(id);
+            Movie movie = movieService.getMovieById(id);
             return ResponseEntity.ok(movie);
-        } catch (DatabaseOperationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found with id: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching movie: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found with id: " + id);
         }
     }
 
@@ -47,7 +44,7 @@ public class MovieController {
     @PostMapping
     public ResponseEntity<String> insertMovie(@RequestBody Movie movie) {
         try {
-            movieDAO.insert(movie);
+            movieService.insertMovie(movie);
             return ResponseEntity.status(HttpStatus.CREATED).body("Movie inserted successfully 🎬");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert movie: " + e.getMessage());
@@ -58,7 +55,7 @@ public class MovieController {
     @DeleteMapping
     public ResponseEntity<String> deleteAllMovies() {
         try {
-            movieDAO.deleteAllMovies();
+            movieService.deleteAllMovies();
             return ResponseEntity.ok("All movies have been deleted successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all movies: " + e.getMessage());
@@ -69,7 +66,7 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMovieById(@PathVariable UUID id) {
         try {
-            movieDAO.delete(id);
+            movieService.deleteMovieById(id);
             return ResponseEntity.ok("Movie deleted successfully with id: " + id);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete movie: " + e.getMessage());
@@ -80,7 +77,7 @@ public class MovieController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateMovieById(@PathVariable UUID id, @RequestBody Movie movie) {
         try {
-            movieDAO.updateMovieById(id, movie);
+            movieService.updateMovie(id, movie);
             return ResponseEntity.ok("Movie updated successfully with id: " + id);
         } catch (Exception e) {
             return ResponseEntity

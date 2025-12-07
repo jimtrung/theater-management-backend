@@ -1,21 +1,8 @@
--- Directors
-CREATE TRIGGER set_updated_at_directors
-BEFORE UPDATE ON directors
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
 -- Movies
 CREATE TRIGGER set_updated_at_movies
 BEFORE UPDATE ON movies
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
-
--- Movie actors
-CREATE TRIGGER set_updated_at_movie_actors
-BEFORE UPDATE ON movie_actors
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
 -- Auditoriums
 CREATE TRIGGER set_updated_at_auditoriums
 BEFORE UPDATE ON auditoriums
@@ -37,5 +24,17 @@ EXECUTE FUNCTION update_updated_at_column();
 -- Tickets
 CREATE TRIGGER set_updated_at_tickets
 BEFORE UPDATE ON tickets
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Users
+CREATE TRIGGER set_updated_at_users
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Profiles
+CREATE TRIGGER set_updated_at_profiles
+BEFORE UPDATE ON profiles
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();

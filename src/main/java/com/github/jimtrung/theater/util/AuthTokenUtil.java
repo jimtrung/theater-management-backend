@@ -23,7 +23,7 @@ public class AuthTokenUtil {
     return Jwts.builder()
         .setSubject(userId.toString())
         .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
         .signWith(secretKey)
         .compact();
   }

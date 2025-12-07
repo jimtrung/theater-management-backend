@@ -24,7 +24,6 @@ public class AuthController {
         User newUser = new User();
         newUser.setUsername(req.username());
         newUser.setEmail(req.email());
-        newUser.setPhoneNumber(req.phoneNumber());
         newUser.setPassword(req.password());
 
         userService.signUp(newUser);

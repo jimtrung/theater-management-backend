@@ -1,23 +1,39 @@
 package com.github.jimtrung.theater.model;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "movies")
 public class Movie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    
     private String name;
     private String description;
-    private UUID directorId;
+    private String director;
+    
+    @ElementCollection
+    private List<String> actors;
+    
+    @ElementCollection
     private List<String> genres;
+    
     private OffsetDateTime premiere;
     private Integer duration;
-    private String language;
+    
+    @Enumerated(EnumType.STRING)
+    private MovieLanguage language; 
+    
     private Integer rated;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    
+    public Movie() {}
 
-    // --- Getters & Setters ---
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 
@@ -27,8 +43,11 @@ public class Movie {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public UUID getDirectorId() { return directorId; }
-    public void setDirectorId(UUID directorId) { this.directorId = directorId; }
+    public String getDirector() { return director; }
+    public void setDirector(String director) { this.director = director; }
+
+    public List<String> getActors() { return actors; }
+    public void setActors(List<String> actors) { this.actors = actors; }
 
     public List<String> getGenres() { return genres; }
     public void setGenres(List<String> genres) { this.genres = genres; }
@@ -39,8 +58,8 @@ public class Movie {
     public Integer getDuration() { return duration; }
     public void setDuration(Integer duration) { this.duration = duration; }
 
-    public String getLanguage() { return language; }
-    public void setLanguage(String language) { this.language = language; }
+    public MovieLanguage getLanguage() { return language; }
+    public void setLanguage(MovieLanguage language) { this.language = language; }
 
     public Integer getRated() { return rated; }
     public void setRated(Integer rated) { this.rated = rated; }

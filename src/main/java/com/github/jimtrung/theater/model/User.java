@@ -1,135 +1,71 @@
 package com.github.jimtrung.theater.model;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "users")
 public class User {
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
+
+  @Column(unique = true, nullable = false)
   private String username;
+
+  @Column(unique = true, nullable = false)
   private String email;
-  private String phoneNumber;
+
   private String password;
+
+  @Enumerated(EnumType.STRING)
   private UserRole role;
-  private Provider provider;
+
   private String token;
-  private Integer otp;
   private Boolean verified;
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
-  public User() {
-  }
-
+  public User() {}
   public User(
-      UUID id, String username, String email, String phoneNumber, String password, UserRole role, Provider provider,
-      String token, Integer otp, Boolean verified, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+      UUID id, String username, String email, String password, UserRole role, String token, Boolean verified,
+      OffsetDateTime createdAt, OffsetDateTime updatedAt) {
     this.id = id;
     this.username = username;
     this.email = email;
-    this.phoneNumber = phoneNumber;
     this.password = password;
     this.role = role;
-    this.provider = provider;
     this.token = token;
-    this.otp = otp;
     this.verified = verified;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
 
-  public UUID getId() {
-    return id;
-  }
+  public UUID getId() { return id; }
+  public void setId(UUID id) { this.id = id; }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
+  public String getUsername() { return username; }
+  public void setUsername(String username) { this.username = username; }
 
-  public String getUsername() {
-    return username;
-  }
+  public String getEmail() { return email; }
+  public void setEmail(String email) { this.email = email; }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+  public String getPassword() { return password; }
+  public void setPassword(String password) { this.password = password; }
 
-  public String getEmail() {
-    return email;
-  }
+  public UserRole getRole() { return role; }
+  public void setRole(UserRole role) { this.role = role; }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+  public String getToken() { return token; }
+  public void setToken(String token) { this.token = token; }
 
-  public String getPhoneNumber() {
-    return phoneNumber;
-  }
+  public Boolean getVerified() { return verified; }
+  public void setVerified(Boolean verified) { this.verified = verified; }
 
-  public void setPhoneNumber(String phoneNumber) {
-    this.phoneNumber = phoneNumber;
-  }
+  public OffsetDateTime getCreatedAt() { return createdAt; }
+  public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
 
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public UserRole getRole() {
-    return role;
-  }
-
-  public void setRole(UserRole role) {
-    this.role = role;
-  }
-
-  public Provider getProvider() {
-    return provider;
-  }
-
-  public void setProvider(Provider provider) {
-    this.provider = provider;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  public Integer getOtp() {
-    return otp;
-  }
-
-  public void setOtp(Integer otp) {
-    this.otp = otp;
-  }
-
-  public Boolean getVerified() {
-    return verified;
-  }
-
-  public void setVerified(Boolean verified) {
-    this.verified = verified;
-  }
-
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(OffsetDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public OffsetDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(OffsetDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+  public OffsetDateTime getUpdatedAt() { return updatedAt; }
+  public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
