@@ -53,4 +53,19 @@ public class Showtime {
 
   public OffsetDateTime getUpdatedAt() { return updatedAt; }
   public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+  @PrePersist
+  public void prePersist() {
+    if (this.createdAt == null) {
+        this.createdAt = OffsetDateTime.now();
+    }
+    if (this.updatedAt == null) {
+        this.updatedAt = OffsetDateTime.now();
+    }
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    this.updatedAt = OffsetDateTime.now();
+  }
 }

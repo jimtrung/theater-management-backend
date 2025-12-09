@@ -68,4 +68,14 @@ public class AuthController {
             .status(200)
             .body("Reset password email sent successfully");
     }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
+        return ResponseEntity.ok(userService.checkUsernameExists(username));
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.checkEmailExists(email));
+    }
 }

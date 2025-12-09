@@ -98,4 +98,12 @@ public class UserService {
         User existingUser = getUser(userId);
         return existingUser.getRole() == UserRole.administrator;
     }
+
+    public boolean checkUsernameExists(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean checkEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

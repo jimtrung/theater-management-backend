@@ -12,4 +12,10 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     List<Ticket> findByUserId(UUID userId);
     List<Ticket> findByShowtimeId(UUID showtimeId);
     boolean existsByShowtimeIdAndSeatId(UUID showtimeId, UUID seatId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT new com.github.jimtrung.theater.dto.MovieRevenueDTO(m.id, m.name, SUM(t.price)) " +
+            "FROM Ticket t, Showtime s, Movie m " +
+            "WHERE t.showtimeId = s.id AND s.movieId = m.id " +
+            "GROUP BY m.id, m.name")
+    List<com.github.jimtrung.theater.dto.MovieRevenueDTO> getRevenuePerMovie();
 }

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "movies")
@@ -16,10 +19,13 @@ public class Movie {
     private String description;
     private String director;
     
-    @ElementCollection
+    @Type(ListArrayType.class)
+    @Column(name = "actors", columnDefinition = "text[]")
     private List<String> actors;
     
-    @ElementCollection
+    @Type(ListArrayType.class)
+    @Column(name = "genres", columnDefinition = "movie_genre[]")
+    @ColumnTransformer(write = "?::movie_genre[]")
     private List<String> genres;
     
     private OffsetDateTime premiere;
