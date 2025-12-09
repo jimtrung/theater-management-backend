@@ -14,19 +14,24 @@ public class Seat {
   @Column(name = "auditorium_id")
   private UUID auditoriumId;
   
-  @Column(name = "row_label")
+  @Column(name = "row")
   private String row; 
   
   private Integer number;
+  
+  @Column(name = "is_booked")
+  private Boolean isBooked = false;
+
   private OffsetDateTime updatedAt;
   private OffsetDateTime createdAt;
 
   public Seat() {}
-  public Seat(UUID id, UUID auditoriumId, String row, Integer number, OffsetDateTime updatedAt, OffsetDateTime createdAt) {
+  public Seat(UUID id, UUID auditoriumId, String row, Integer number, Boolean isBooked, OffsetDateTime updatedAt, OffsetDateTime createdAt) {
     this.id = id;
     this.auditoriumId = auditoriumId;
     this.row = row;
     this.number = number;
+    this.isBooked = isBooked;
     this.updatedAt = updatedAt;
     this.createdAt = createdAt;
   }
@@ -42,6 +47,9 @@ public class Seat {
 
   public Integer getNumber() { return number; }
   public void setNumber(Integer number) { this.number = number; }
+
+  public Boolean getIsBooked() { return isBooked; }
+  public void setIsBooked(Boolean isBooked) { this.isBooked = isBooked; }
 
   public OffsetDateTime getUpdatedAt() { return updatedAt; }
   public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
