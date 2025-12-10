@@ -12,8 +12,10 @@ public class DataSourceConfig {
 
     @Bean
     public boolean initializeDataSource(DataSource dataSource) {
-        try (Connection conn = dataSource.getConnection()) {}
-        catch (SQLException e) {}
+        try (Connection conn = dataSource.getConnection()) {
+            System.out.println("[INFO] Preinitialized to database successfully");
+        }
+        catch (SQLException ignored) {}
         return true;
     }
 }

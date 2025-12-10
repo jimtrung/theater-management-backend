@@ -26,9 +26,8 @@ public class TicketController {
     public ResponseEntity<?> bookTickets(@RequestHeader("Authorization") String token, @RequestBody BookingRequest request) {
         try {
             String accessToken = token.substring(7);
-            UUID userId = authTokenUtil.parseToken(accessToken); // Assuming parseToken returns userId or we have a method for it
-            // Actually authTokenUtil usually validates. I'll assume valid if filter passed, but I need ID.
-            
+            UUID userId = authTokenUtil.parseToken(accessToken);
+
             List<Ticket> tickets = ticketService.bookTickets(userId, request);
             return ResponseEntity.ok(tickets);
         } catch (Exception e) {

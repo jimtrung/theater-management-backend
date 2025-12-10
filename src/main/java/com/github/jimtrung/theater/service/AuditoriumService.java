@@ -35,6 +35,7 @@ public class AuditoriumService {
         int columns = 10;
         int rows = (int) Math.ceil((double) capacity / columns);
 
+        // TODO: This should be async
         for (int i = 0; i < rows; i++) {
             String rowLabel = String.valueOf((char) ('A' + i));
             for (int j = 1; j <= columns; j++) {

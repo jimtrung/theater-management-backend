@@ -32,7 +32,7 @@ public class TicketService {
             ticket.setUserId(userId);
             ticket.setShowtimeId(request.showtimeId());
             ticket.setSeatId(seatId);
-            ticket.setPrice(50000); // Fixed price for now
+            ticket.setPrice(50000);
             ticket.setCreatedAt(OffsetDateTime.now());
             ticket.setUpdatedAt(OffsetDateTime.now());
             

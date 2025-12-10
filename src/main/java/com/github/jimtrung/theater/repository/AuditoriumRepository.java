@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface AuditoriumRepository extends JpaRepository<Auditorium, UUID> {
-}
+public interface AuditoriumRepository extends JpaRepository<Auditorium, UUID> {}

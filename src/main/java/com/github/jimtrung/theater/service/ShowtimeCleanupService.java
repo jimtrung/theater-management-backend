@@ -15,11 +15,10 @@ public class ShowtimeCleanupService {
         this.showtimeRepository = showtimeRepository;
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // Run daily at midnight
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void cleanupOldShowtimes() {
         OffsetDateTime now = OffsetDateTime.now();
         showtimeRepository.deleteByEndTimeBefore(now);
-        System.out.println("Cleaned up showtimes that ended before: " + now);
     }
 }

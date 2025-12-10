@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,10 +26,6 @@ public class SecurityConfig {
         return new JwtAuthFilter(authTokenUtil);
     }
 
-    /**
-     * Chain #1 — Public API endpoints
-     * These should NEVER trigger OAuth redirect
-     */
     @Bean
     @Order(1)
     public SecurityFilterChain authChain(HttpSecurity http) throws Exception {

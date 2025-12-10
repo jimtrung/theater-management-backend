@@ -19,7 +19,6 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    // --- GET all ---
     @GetMapping
     public ResponseEntity<List<Movie>> getAllMovies() {
         List<Movie> movies = movieService.getAllMovies();
@@ -29,7 +28,6 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
-    // --- GET by ID ---
     @GetMapping("/{id}")
     public ResponseEntity<?> getMovieById(@PathVariable UUID id) {
         try {
@@ -40,7 +38,6 @@ public class MovieController {
         }
     }
 
-    // --- POST (Insert) ---
     @PostMapping
     public ResponseEntity<String> insertMovie(@RequestBody Movie movie) {
         try {
@@ -51,7 +48,6 @@ public class MovieController {
         }
     }
 
-    // --- DELETE ALL ---
     @DeleteMapping
     public ResponseEntity<String> deleteAllMovies() {
         try {
@@ -62,7 +58,6 @@ public class MovieController {
         }
     }
 
-    // --- DELETE by ID ---
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMovieById(@PathVariable UUID id) {
         try {
@@ -73,7 +68,6 @@ public class MovieController {
         }
     }
 
-    // --- UPDATE by ID ---
     @PutMapping("/{id}")
     public ResponseEntity<String> updateMovieById(@PathVariable UUID id, @RequestBody Movie movie) {
         try {

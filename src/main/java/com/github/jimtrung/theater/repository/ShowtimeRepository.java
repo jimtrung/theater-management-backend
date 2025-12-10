@@ -13,7 +13,4 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, UUID> {
     List<Showtime> findByMovieId(UUID movieId);
     List<Showtime> findByAuditoriumId(UUID auditoriumId);
     void deleteByEndTimeBefore(OffsetDateTime dateTime);
-    // For date overlap checking, we might need custom queries or streams
-    // Example JPQL:
-    // @Query("SELECT s FROM Showtime s WHERE s.auditoriumId = :auditoriumId AND ((s.startTime < :endTime AND s.endTime > :startTime))")
 }

@@ -37,7 +37,7 @@ public class MovieService {
     }
 
     public void updateMovie(UUID id, Movie movie) {
-        movie.setId(id); // Ensure ID matches
+        movie.setId(id);
         movieRepository.save(movie);
     }
 }
