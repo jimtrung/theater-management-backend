@@ -34,6 +34,29 @@ public class TicketController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserTickets(@RequestHeader("Authorization") String token) {
+        try {
+            String accessToken = token.substring(7);
+            UUID userId = authTokenUtil.parseToken(accessToken);
+            return ResponseEntity.ok(ticketService.getUserTickets(userId));
+        } catch (Exception e) {
+             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/pay")
+    public ResponseEntity<?> payTickets(@RequestHeader("Authorization") String token, @RequestBody List<UUID> ticketIds) {
+        try {
+             String accessToken = token.substring(7);
+             UUID userId = authTokenUtil.parseToken(accessToken);
+             ticketService.payTickets(userId, ticketIds);
+             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @GetMapping("/stats/showtime")
     public ResponseEntity<?> getShowtimeStats() {
         return ResponseEntity.ok(ticketService.getShowtimeStats());
