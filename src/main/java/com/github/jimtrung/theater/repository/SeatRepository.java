@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface SeatRepository extends JpaRepository<Seat, UUID> {
     List<Seat> findByAuditoriumId(UUID auditoriumId);
     void deleteByAuditoriumId(UUID auditoriumId);
+    long countByAuditoriumId(UUID auditoriumId);
 }

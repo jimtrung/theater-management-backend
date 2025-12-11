@@ -1,6 +1,7 @@
 package com.github.jimtrung.theater.repository;
 
 import com.github.jimtrung.theater.dto.MovieRevenueDTO;
+import com.github.jimtrung.theater.dto.ShowtimeRevenueDTO;
 import com.github.jimtrung.theater.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,9 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
             "WHERE t.showtimeId = s.id AND s.movieId = m.id " +
             "GROUP BY m.id, m.name")
     List<MovieRevenueDTO> getRevenuePerMovie();
+
+    @Query("SELECT new com.github.jimtrung.theater.dto.ShowtimeRevenueDTO(s.id, COUNT(t.id), COALESCE(SUM(t.price), 0)) " +
+            "FROM Showtime s LEFT JOIN Ticket t ON t.showtimeId = s.id " +
+            "GROUP BY s.id")
+    List<ShowtimeRevenueDTO> getRevenuePerShowtime();
 }

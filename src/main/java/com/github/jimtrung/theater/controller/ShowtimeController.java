@@ -31,9 +31,9 @@ public class ShowtimeController {
     public ResponseEntity<String> insertShowtime(@RequestBody Showtime showtime) {
         try {
             showtimeService.insert(showtime);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Showtime inserted successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Thêm suất chiếu thành công");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert showtime: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Thêm suất chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -41,9 +41,9 @@ public class ShowtimeController {
     public ResponseEntity<String> deleteAllShowtimes() {
         try {
             showtimeService.deleteAllShowtimes();
-            return ResponseEntity.ok("All showtimes have been deleted successfully.");
+            return ResponseEntity.ok("Tất cả suất chiếu đã được xóa thành công.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all showtimes: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa tất cả suất chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -51,9 +51,9 @@ public class ShowtimeController {
     public ResponseEntity<String> deleteShowtimeById(@PathVariable UUID id) {
         try {
             showtimeService.delete(id);
-            return ResponseEntity.ok("Showtime has been deleted successfully with id: " + id);
+            return ResponseEntity.ok("Xóa suất chiếu thành công với ID: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete showtime: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa suất chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -70,11 +70,11 @@ public class ShowtimeController {
     public ResponseEntity<String> updateShowtimeById(@PathVariable UUID id, @RequestBody Showtime showtime) {
         try {
             showtimeService.updateShowtimeById(id, showtime);
-            return ResponseEntity.ok("Showtime updated successfully with id: " + id);
+            return ResponseEntity.ok("Cập nhật suất chiếu thành công với ID: " + id);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update showtime: " + e.getMessage());
+                    .body("Cập nhật suất chiếu thất bại: " + e.getMessage());
         }
     }
     @GetMapping("/{id}/seats")

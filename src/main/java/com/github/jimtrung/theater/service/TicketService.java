@@ -5,6 +5,8 @@ import com.github.jimtrung.theater.model.Ticket;
 import com.github.jimtrung.theater.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.github.jimtrung.theater.dto.MovieRevenueDTO;
+import com.github.jimtrung.theater.dto.ShowtimeRevenueDTO;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class TicketService {
         
         for (UUID seatId : request.seatIds()) {
             if (ticketRepository.existsByShowtimeIdAndSeatId(request.showtimeId(), seatId)) {
-                throw new RuntimeException("Seat " + seatId + " is already booked.");
+                throw new RuntimeException("Ghế " + seatId + " đã được đặt.");
             }
             
             Ticket ticket = new Ticket();
@@ -42,7 +44,11 @@ public class TicketService {
         return tickets;
     }
 
-    public List<com.github.jimtrung.theater.dto.MovieRevenueDTO> getRevenueStats() {
+    public List<MovieRevenueDTO> getRevenueStats() {
         return ticketRepository.getRevenuePerMovie();
+    }
+
+    public List<ShowtimeRevenueDTO> getShowtimeStats() {
+        return ticketRepository.getRevenuePerShowtime();
     }
 }

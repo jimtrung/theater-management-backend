@@ -30,7 +30,7 @@ public class AuthController {
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body("User signed up successfully");
+            .body("Đăng ký thành công");
     }
 
     @PostMapping("/signin")
@@ -52,7 +52,7 @@ public class AuthController {
         if (newAccessToken == null) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body("Expired refresh token");
+                .body("Refresh token đã hết hạn");
         }
 
         return ResponseEntity
@@ -66,7 +66,7 @@ public class AuthController {
 
         return ResponseEntity
             .status(200)
-            .body("Reset password email sent successfully");
+            .body("Email đặt lại mật khẩu đã được gửi thành công");
     }
 
     @GetMapping("/check-username")

@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DatabaseOperationException.class)
     public ResponseEntity<ErrorResponse> handleDatabaseError(DatabaseOperationException ex, WebRequest req) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + ex.getMessage(), req);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi cơ sở dữ liệu: " + ex.getMessage(), req);
     }
 
     @ExceptionHandler(MismatchedAuthProviderException.class)
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex, WebRequest req) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage(), req);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi không mong muốn: " + ex.getMessage(), req);
     }
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message, WebRequest req) {

@@ -34,7 +34,7 @@ public class MovieController {
             Movie movie = movieService.getMovieById(id);
             return ResponseEntity.ok(movie);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movie not found with id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy phim với ID: " + id);
         }
     }
 
@@ -42,9 +42,9 @@ public class MovieController {
     public ResponseEntity<String> insertMovie(@RequestBody Movie movie) {
         try {
             movieService.insertMovie(movie);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Movie inserted successfully 🎬");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Thêm phim thành công");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert movie: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Thêm phim thất bại: " + e.getMessage());
         }
     }
 
@@ -52,9 +52,9 @@ public class MovieController {
     public ResponseEntity<String> deleteAllMovies() {
         try {
             movieService.deleteAllMovies();
-            return ResponseEntity.ok("All movies have been deleted successfully.");
+            return ResponseEntity.ok("Tất cả phim đã được xóa thành công.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all movies: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa tất cả phim thất bại: " + e.getMessage());
         }
     }
 
@@ -62,9 +62,9 @@ public class MovieController {
     public ResponseEntity<String> deleteMovieById(@PathVariable UUID id) {
         try {
             movieService.deleteMovieById(id);
-            return ResponseEntity.ok("Movie deleted successfully with id: " + id);
+            return ResponseEntity.ok("Xóa phim thành công với ID: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete movie: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa phim thất bại: " + e.getMessage());
         }
     }
 
@@ -72,11 +72,11 @@ public class MovieController {
     public ResponseEntity<String> updateMovieById(@PathVariable UUID id, @RequestBody Movie movie) {
         try {
             movieService.updateMovie(id, movie);
-            return ResponseEntity.ok("Movie updated successfully with id: " + id);
+            return ResponseEntity.ok("Cập nhật phim thành công với ID: " + id);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update movie: " + e.getMessage());
+                    .body("Cập nhật phim thất bại: " + e.getMessage());
         }
     }
 }

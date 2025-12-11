@@ -32,17 +32,17 @@ public class UserService {
     }
 
     public void signUp(User user) {
-        if (user.getUsername().isEmpty()) throw new InvalidUserDataException("Username is empty");
-        if (user.getEmail().isEmpty()) throw new InvalidUserDataException("Email is empty");
-        if (user.getPassword().isEmpty()) throw new InvalidUserDataException("Password is empty");
+        if (user.getUsername().isEmpty()) throw new InvalidUserDataException("Tên đăng nhập không được để trống");
+        if (user.getEmail().isEmpty()) throw new InvalidUserDataException("Email không được để trống");
+        if (user.getPassword().isEmpty()) throw new InvalidUserDataException("Mật khẩu không được để trống");
         if (!emailValidator.isValidEmail(user.getEmail()))
-            throw new InvalidUserDataException("Invalid email addresses");
+            throw new InvalidUserDataException("Địa chỉ email không hợp lệ");
 
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new UserAlreadyExistsException("User with this username already exists");
+            throw new UserAlreadyExistsException("Người dùng với tên đăng nhập này đã tồn tại");
         }
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new UserAlreadyExistsException("User with this email already exists");
+            throw new UserAlreadyExistsException("Người dùng với email này đã tồn tại");
         }
 
         String token = tokenUtil.generateToken();
@@ -55,24 +55,25 @@ public class UserService {
         user.setCreatedAt(OffsetDateTime.now());
         user.setUpdatedAt(OffsetDateTime.now());
 
+        // TODO: Async this
         try {
             emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/page/verify/" + token);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send verification email", e);
+            throw new RuntimeException("Gửi email xác thực thất bại", e);
         }
 
         userRepository.save(user);
     }
 
     public TokenPair signIn(User user) {
-        if (user.getUsername().isEmpty()) throw new InvalidUserDataException("Username is empty");
-        if (user.getPassword().isEmpty()) throw new InvalidUserDataException("Password is empty");
+        if (user.getUsername().isEmpty()) throw new InvalidUserDataException("Tên đăng nhập không được để trống");
+        if (user.getPassword().isEmpty()) throw new InvalidUserDataException("Mật khẩu không được để trống");
 
         User existingUser = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new InvalidCredentialsException("User does not exist"));
+                .orElseThrow(() -> new InvalidCredentialsException("Người dùng không tồn tại"));
 
         if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword()))
-            throw new InvalidCredentialsException("Wrong password");
+            throw new InvalidCredentialsException("Sai mật khẩu");
 
         String refreshToken = authTokenUtil.generateRefreshToken(existingUser.getId());
         String accessToken = authTokenUtil.generateAccessToken(existingUser.getId());
@@ -82,7 +83,7 @@ public class UserService {
 
     public User getUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidCredentialsException("User does not exist"));
+                .orElseThrow(() -> new InvalidCredentialsException("Người dùng không tồn tại"));
     }
 
     public String refresh(String refreshToken) {

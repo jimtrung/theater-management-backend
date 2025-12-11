@@ -31,9 +31,9 @@ public class AuditoriumController {
     public ResponseEntity<String> insertAuditorium(@RequestBody Auditorium auditorium) {
         try {
             auditoriumService.insert(auditorium);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Auditorium insert successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Thêm phòng chiếu thành công");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert auditorium: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Thêm phòng chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -41,9 +41,9 @@ public class AuditoriumController {
     public ResponseEntity<String> deleteAllAuditoriums() {
         try {
             auditoriumService.deleteAllAuditoriums();
-            return ResponseEntity.ok("All auditoriums have been deleted successfully.");
+            return ResponseEntity.ok("Tất cả phòng chiếu đã được xóa thành công.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete all auditoriums: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa tất cả phòng chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -51,9 +51,9 @@ public class AuditoriumController {
     public ResponseEntity<String> deleteAuditoriumById(@PathVariable UUID id) {
         try {
             auditoriumService.delete(id);
-            return ResponseEntity.ok("Auditorium have been deleted successfully with id: " + id);
+            return ResponseEntity.ok("Xóa phòng chiếu thành công với ID: " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete auditorium: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Xóa phòng chiếu thất bại: " + e.getMessage());
         }
     }
 
@@ -70,11 +70,11 @@ public class AuditoriumController {
     public ResponseEntity<String> updateAuditoriumById(@PathVariable UUID id, @RequestBody Auditorium auditorium) {
         try {
             auditoriumService.updateAuditoriumById(id, auditorium);
-            return ResponseEntity.ok("Auditorium updated successfully with id: " + id);
+            return ResponseEntity.ok("Cập nhật phòng chiếu thành công với ID: " + id);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update auditorium: " + e.getMessage());
+                    .body("Cập nhật phòng chiếu thất bại: " + e.getMessage());
         }
     }
 }

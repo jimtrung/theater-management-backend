@@ -34,4 +34,8 @@ public class TicketController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/stats/showtime")
+    public ResponseEntity<?> getShowtimeStats() {
+        return ResponseEntity.ok(ticketService.getShowtimeStats());
+    }
 }
