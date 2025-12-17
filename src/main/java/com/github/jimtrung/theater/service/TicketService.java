@@ -1,8 +1,9 @@
 package com.github.jimtrung.theater.service;
 
 import com.github.jimtrung.theater.dto.BookingRequest;
-import com.github.jimtrung.theater.model.Ticket;
-import com.github.jimtrung.theater.repository.TicketRepository;
+import com.github.jimtrung.theater.model.*;
+import com.github.jimtrung.theater.repository.*;
+import com.github.jimtrung.theater.util.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.github.jimtrung.theater.dto.MovieRevenueDTO;
@@ -19,7 +20,10 @@ public class TicketService {
 
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
+
     }
+
+
 
     @Transactional
     public List<Ticket> bookTickets(UUID userId, BookingRequest request) {
@@ -37,10 +41,10 @@ public class TicketService {
             ticket.setPrice(50000);
             ticket.setCreatedAt(OffsetDateTime.now());
             ticket.setUpdatedAt(OffsetDateTime.now());
-            
+
             tickets.add(ticketRepository.save(ticket));
         }
-        
+
         return tickets;
     }
 
