@@ -1,9 +1,8 @@
 package com.github.jimtrung.theater.service;
 
 import com.github.jimtrung.theater.dto.BookingRequest;
-import com.github.jimtrung.theater.model.*;
-import com.github.jimtrung.theater.repository.*;
-import com.github.jimtrung.theater.util.EmailValidator;
+import com.github.jimtrung.theater.model.Ticket;
+import com.github.jimtrung.theater.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.github.jimtrung.theater.dto.MovieRevenueDTO;
@@ -20,10 +19,7 @@ public class TicketService {
 
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
-
     }
-
-
 
     @Transactional
     public List<Ticket> bookTickets(UUID userId, BookingRequest request) {
@@ -31,6 +27,8 @@ public class TicketService {
         
         for (UUID seatId : request.seatIds()) {
             if (ticketRepository.existsByShowtimeIdAndSeatId(request.showtimeId(), seatId)) {
+                // Check if existing ticket is PENDING and owned by same user? 
+                // For simplicity, if it exists, it's taken. Ideally we could expire pending tickets.
                 throw new RuntimeException("Ghế " + seatId + " đã được đặt.");
             }
             
@@ -41,11 +39,34 @@ public class TicketService {
             ticket.setPrice(50000);
             ticket.setCreatedAt(OffsetDateTime.now());
             ticket.setUpdatedAt(OffsetDateTime.now());
-
+            ticket.setStatus("PENDING");
+            
             tickets.add(ticketRepository.save(ticket));
         }
-
+        
         return tickets;
+    }
+
+    public List<Ticket> getUserTickets(UUID userId) {
+        List<Ticket> tickets = ticketRepository.findByUserId(userId);
+        tickets.sort((t1, t2) -> t2.getCreatedAt().compareTo(t1.getCreatedAt()));
+        return tickets;
+    }
+
+    @Transactional
+    public void payTickets(UUID userId, List<UUID> ticketIds) {
+        List<Ticket> tickets = ticketRepository.findAllById(ticketIds);
+        for (Ticket ticket : tickets) {
+            if (!ticket.getUserId().equals(userId)) {
+                throw new RuntimeException("Không tìm thấy vé hoặc vé không thuộc quyền sở hữu.");
+            }
+            if ("PAID".equals(ticket.getStatus())) {
+                continue; // Already paid
+            }
+            ticket.setStatus("PAID");
+            ticket.setUpdatedAt(OffsetDateTime.now());
+            ticketRepository.save(ticket);
+        }
     }
 
     public List<MovieRevenueDTO> getRevenueStats() {
