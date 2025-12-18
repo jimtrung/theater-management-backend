@@ -78,4 +78,44 @@ public class AuthController {
     public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
         return ResponseEntity.ok(userService.checkEmailExists(email));
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verify(@RequestParam String token) {
+        try {
+            userService.verifyUser(token);
+            String successHtml = """
+                <html>
+                <head>
+                    <title>Xác thực thành công</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+                        h1 { color: #4CAF50; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Xác thực tài khoản thành công!</h1>
+                    <p>Bạn có thể quay lại ứng dụng và đăng nhập.</p>
+                </body>
+                </html>
+                """;
+            return ResponseEntity.ok(successHtml);
+        } catch (Exception e) {
+             String errorHtml = """
+                <html>
+                <head>
+                    <title>Xác thực thất bại</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+                        h1 { color: #f44336; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Xác thực thất bại!</h1>
+                    <p>Link xác thực không hợp lệ hoặc đã hết hạn.</p>
+                </body>
+                </html>
+                """;
+            return ResponseEntity.badRequest().body(errorHtml);
+        }
+    }
 }

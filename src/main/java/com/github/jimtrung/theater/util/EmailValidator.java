@@ -52,12 +52,12 @@ public class EmailValidator {
 
     helper.setTo(to);
     helper.setSubject("Verify your email");
-    helper.setFrom("your_email@gmail.com");
+    helper.setFrom("theatermanagent.business@gmail.com");
 
     String htmlContent = getEmailTemplate().replace("{{verify_link}}", verifyLink);
 
     helper.setText(htmlContent, true);
-    if (to.equals("nguyenhaitrung737@gmail.com")) mailSender.send(message);
+    mailSender.send(message);
   }
 
   private String getEmailTemplate() {
@@ -66,7 +66,7 @@ public class EmailValidator {
         <html>
         <head>
           <meta charset="UTF-8">
-          <title>Verify your email</title>
+          <title>Xác thực email của bạn</title>
           <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; background:#f4f6f8; color:#333; }
             .container { max-width:500px; margin:40px auto; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
@@ -81,17 +81,17 @@ public class EmailValidator {
         <body>
           <div class="container">
             <div class="header">
-              <h1>Verify your email 🍌</h1>
+              <h1>Xác thực email của bạn</h1>
             </div>
             <div class="content">
-              <p>Hi there! Thanks for signing up. Please confirm your email address by clicking the button below.</p>
+              <p>Xin chào! Cảm ơn bạn đã đăng ký. Vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào nút bên dưới.</p>
               <p style="text-align:center;">
-                <a href="{{verify_link}}" class="verify-btn">Verify Email</a>
+                <a href="{{verify_link}}" class="verify-btn">Xác thực Email</a>
               </p>
-              <p>If you didn’t sign up for this account, you can safely ignore this message 🚬</p>
+              <p>Nếu bạn không đăng ký tài khoản này, bạn có thể bỏ qua tin nhắn này 🚬</p>
             </div>
             <div class="footer">
-              &copy; 2025 LinkedIn Clone · All rights reserved
+              &copy; 2025 Theater Management · All rights reserved
             </div>
           </div>
         </body>

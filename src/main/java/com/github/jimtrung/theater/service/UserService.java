@@ -57,7 +57,7 @@ public class UserService {
 
         // TODO: Async this
         try {
-            emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/page/verify/" + token);
+            emailValidator.sendVerificationEmail(user.getEmail(), "http://localhost:8080/auth/verify?token=" + token);
         } catch (Exception e) {
             throw new RuntimeException("Gửi email xác thực thất bại", e);
         }
@@ -106,5 +106,13 @@ public class UserService {
 
     public boolean checkEmailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public void verifyUser(String token) {
+        User user = userRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidUserDataException("Token không hợp lệ hoặc đã hết hạn"));
+
+        user.setVerified(true);
+        userRepository.save(user);
     }
 }
