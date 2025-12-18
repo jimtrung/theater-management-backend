@@ -88,7 +88,7 @@ public class EmailValidator {
               <p style="text-align:center;">
                 <a href="{{verify_link}}" class="verify-btn">Xác thực Email</a>
               </p>
-              <p>Nếu bạn không đăng ký tài khoản này, bạn có thể bỏ qua tin nhắn này 🚬</p>
+              <p>Nếu bạn không đăng ký tài khoản này, bạn có thể bỏ qua tin nhắn này</p>
             </div>
             <div class="footer">
               &copy; 2025 Theater Management · All rights reserved
@@ -129,7 +129,7 @@ public class EmailValidator {
               
                         <div style="display: flex; flex-wrap: wrap; margin-bottom: 15px;">
                             <div style="width: 50%; padding-right: 10px; box-sizing: border-box;">
-                                <p style="margin: 0; font-size: 12px; color: #999;">Rạp CGV</p>
+                                <p style="margin: 0; font-size: 12px; color: #999;">Rạp NCC</p>
                                 <p style="margin: 2px 0 10px 0; font-size: 16px; font-weight: bold; color: #333;">{{cinema_name}}</p>
               
                                 <p style="margin: 0; font-size: 12px; color: #999;">Ghế</p>
@@ -149,12 +149,9 @@ public class EmailValidator {
                     </div>
               
                     <div style="padding: 20px 15px; text-align: center;">
-                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="\s
-                             alt="Mô phỏng Barcode"\s
-                             style="width: 90%; height: 60px; background-color: black; margin-bottom: 10px; border-radius: 3px;">
-                        <p style="margin: 0 0 15px 0; font-size: 20px; font-weight: bold; color: #333; letter-spacing: 5px;">{{ticket_code}}</p>
+                        <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold; color: #333; letter-spacing: 5px;">{{ticket_code}}</p>
                         <p style="margin: 0; font-size: 14px; color: #666;">
-                            Vui lòng đưa mã số này đến quầy vé CGV để nhận vé của bạn.
+                            Vui lòng đưa mã số này đến quầy vé NCC để nhận vé của bạn.
                         </p>
                     </div>
               
@@ -165,7 +162,7 @@ public class EmailValidator {
                         </p>
               
                         <p style="margin: 0; font-size: 12px; color: #cc0000; font-weight: bold;">
-                            Lưu ý <span style="color: #333; font-weight: normal;">CGV không chấp nhận hoàn tiền hoặc đổi vé đã thanh toán thành công trên website</span>
+                            Lưu ý <span style="color: #333; font-weight: normal;">NCC không chấp nhận hoàn tiền hoặc đổi vé đã thanh toán thành công trên website</span>
                         </p>
                     </div>
               
