@@ -39,5 +39,4 @@ flyway.conf
 .env
 
 ### Runtime / Dynamic ###
-uploads/
 *.log

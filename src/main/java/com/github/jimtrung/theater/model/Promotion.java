@@ -22,6 +22,9 @@ public class Promotion {
 
     @Column(name = "description", length = 150)
     private String description;
+    
+    @Column(name = "image_url", length = 150)
+    private String imageUrl;
 
     public Promotion() {}
 
@@ -40,4 +43,7 @@ public class Promotion {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
