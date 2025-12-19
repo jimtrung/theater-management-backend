@@ -14,6 +14,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -120,4 +121,8 @@ public class UserService {
     user.setVerified(true);
     userRepository.save(user);
   }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }

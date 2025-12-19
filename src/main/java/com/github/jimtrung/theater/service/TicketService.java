@@ -76,4 +76,36 @@ public class TicketService {
     public List<ShowtimeRevenueDTO> getShowtimeStats() {
         return ticketRepository.getRevenuePerShowtime();
     }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    public List<Ticket> getTicketsByStatus(String status) {
+        return ticketRepository.findByStatus(status);
+    }
+    @Transactional
+    public void deleteTickets(UUID userId, List<UUID> ticketIds) {
+
+        List<Ticket> tickets = ticketRepository.findAllById(ticketIds);
+
+        if (tickets.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy vé để xóa.");
+        }
+
+        for (Ticket ticket : tickets) {
+            if (!ticket.getUserId().equals(userId)) {
+                throw new RuntimeException("Không có quyền xóa vé không thuộc sở hữu.");
+            }
+
+            if ("PAID".equals(ticket.getStatus())) {
+                throw new RuntimeException("Không thể xóa vé đã thanh toán.");
+            }
+        }
+
+        ticketRepository.deleteAll(tickets);
+    }
+
+
+
 }

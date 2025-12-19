@@ -26,4 +26,6 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
             "FROM Showtime s LEFT JOIN Ticket t ON t.showtimeId = s.id " +
             "GROUP BY s.id")
     List<ShowtimeRevenueDTO> getRevenuePerShowtime();
+
+    List<Ticket> findByStatus(String status);
 }

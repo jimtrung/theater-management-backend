@@ -62,4 +62,37 @@ public class TicketController {
   public ResponseEntity<?> getShowtimeStats() {
     return ResponseEntity.ok(ticketService.getShowtimeStats());
   }
+
+    @GetMapping
+    public ResponseEntity<?> getAllTickets(
+            @RequestParam(required = false) String status
+    ) {
+        try {
+            if (status == null) {
+                return ResponseEntity.ok(ticketService.getAllTickets());
+            }
+            return ResponseEntity.ok(ticketService.getTicketsByStatus(status));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteTickets(
+            @RequestHeader("Authorization") String token,
+            @RequestBody List<UUID> ticketIds
+    ) {
+        try {
+            String accessToken = token.substring(7);
+            UUID userId = authTokenUtil.parseToken(accessToken);
+
+            ticketService.deleteTickets(userId, ticketIds);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 }

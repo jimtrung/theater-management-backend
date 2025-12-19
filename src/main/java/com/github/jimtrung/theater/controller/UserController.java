@@ -27,4 +27,9 @@ public class UserController {
         .status(HttpStatus.OK)
         .body(userService.getUser(userId));
   }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 }

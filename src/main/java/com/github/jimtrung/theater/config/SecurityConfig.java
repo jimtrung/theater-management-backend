@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain authChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/auth/**", "/user/**", "/movies/**", "/oauth/**", "/uploads/**", "/auditoriums/**", "/actor/**", "/director/**", "/movie-actors/**")
+        http.securityMatcher("/auth/**", "/user/**", "/movies/**", "/oauth/**", "/uploads/**", "/auditoriums/**", "/actor/**", "/director/**", "/movie-actors/**", "/user/all")
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
